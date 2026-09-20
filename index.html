@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0d1a" />
+    <meta name="description" content="Police Chase — a fast arcade highway escape game. Drive, dodge traffic, outrun the cops." />
+    <title>Police Chase</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚓</text></svg>" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="game-root"></div>
+
+      <!-- ===== Landing / menu ===== -->
+      <section id="screen-menu" class="overlay">
+        <div class="panel">
+          <div class="logo">
+            <h1 class="title">POLICE<span>CHASE</span></h1>
+            <p class="tagline">Escape. Survive. Don't Get Caught.</p>
+          </div>
+
+          <button id="btn-play" class="btn btn-primary">PLAY</button>
+
+          <div class="stats-row">
+            <div class="stat"><span class="stat-label">BEST SCORE</span><span class="stat-value" id="menu-best">0</span></div>
+            <div class="stat"><span class="stat-label">TOTAL COINS</span><span class="stat-value" id="menu-coins">0</span></div>
+          </div>
+
+          <button id="btn-sound" class="btn btn-ghost" aria-pressed="true">SOUND: ON</button>
+
+          <div class="controls-help">
+            <div class="ch-row"><b>Desktop</b><span>A/D or ←/→ steer · W/S throttle · SPACE nitro · ESC pause</span></div>
+            <div class="ch-row"><b>Mobile</b><span>Hold LEFT / RIGHT · tap NITRO</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Pause ===== -->
+      <section id="screen-pause" class="overlay hidden">
+        <div class="panel panel-sm">
+          <h2 class="heading">PAUSED</h2>
+          <button id="btn-resume" class="btn btn-primary">RESUME</button>
+          <button id="btn-restart-pause" class="btn">RESTART</button>
+          <button id="btn-home-pause" class="btn btn-ghost">HOME</button>
+        </div>
+      </section>
+
+      <!-- ===== Game over ===== -->
+      <section id="screen-gameover" class="overlay hidden">
+        <div class="panel panel-sm">
+          <h2 class="heading heading-danger">GAME OVER</h2>
+          <p id="go-reason" class="reason">YOU CRASHED</p>
+          <p id="go-highscore" class="highscore hidden">🏆 NEW HIGH SCORE!</p>
+
+          <div class="score-block">
+            <span class="sb-label">SCORE</span>
+            <span class="sb-value" id="go-score">0</span>
+          </div>
+
+          <div class="result-grid">
+            <div class="rg-cell"><span class="rg-label">DISTANCE</span><span class="rg-value" id="go-distance">0.0 KM</span></div>
+            <div class="rg-cell"><span class="rg-label">TIME</span><span class="rg-value" id="go-time">00:00</span></div>
+            <div class="rg-cell"><span class="rg-label">COINS</span><span class="rg-value" id="go-coins">0</span></div>
+            <div class="rg-cell"><span class="rg-label">ESCAPED</span><span class="rg-value" id="go-escaped">0</span></div>
+          </div>
+
+          <div class="best-line">BEST <b id="go-best">0</b></div>
+
+          <button id="btn-again" class="btn btn-primary">PLAY AGAIN</button>
+          <button id="btn-home-over" class="btn btn-ghost">HOME</button>
+        </div>
+      </section>
+
+      <!-- ===== Touch controls ===== -->
+      <div id="touch-controls" class="hidden" aria-hidden="true">
+        <button class="tc tc-left" data-ctl="left" aria-label="Steer left"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button>
+        <button class="tc tc-nitro" data-ctl="nitro" aria-label="Nitro">NITRO</button>
+        <button class="tc tc-right" data-ctl="right" aria-label="Steer right"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
+
+      <button id="btn-pause" class="icon-btn hidden" aria-label="Pause">
+        <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      </button>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

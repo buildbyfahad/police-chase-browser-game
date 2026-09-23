@@ -70,7 +70,7 @@ No install. No account. No downloads. Just hit **PLAY**.
 <td align="center">
   <img src="docs/screenshots/mobile.png" width="240" alt="Mobile touch controls"><br>
   <b>Mobile</b><br>
-  <sub>Big thumb targets that never block the road</sub>
+  <sub>Steering one side, GAS / BRAKE / BOOST the other</sub>
 </td>
 <td align="center">
   <img src="docs/screenshots/pause.png" width="240" alt="Pause screen"><br>
@@ -108,9 +108,9 @@ nginx — anything. **There is no backend.**
 <table>
 <tr><th align="left">Action</th><th align="left">⌨️ Desktop</th><th align="left">📱 Mobile</th></tr>
 <tr><td><b>Steer</b></td><td><code>A</code> <code>D</code> &nbsp;or&nbsp; <code>←</code> <code>→</code></td><td>hold <b>LEFT</b> / <b>RIGHT</b></td></tr>
-<tr><td><b>Accelerate</b></td><td><code>W</code> &nbsp;or&nbsp; <code>↑</code></td><td>auto-cruise</td></tr>
-<tr><td><b>Brake</b></td><td><code>S</code> &nbsp;or&nbsp; <code>↓</code></td><td>—</td></tr>
-<tr><td><b>Nitro</b></td><td><code>Space</code></td><td>hold <b>NITRO</b></td></tr>
+<tr><td><b>Accelerate</b></td><td><code>W</code> &nbsp;or&nbsp; <code>↑</code></td><td>hold <b>GAS</b></td></tr>
+<tr><td><b>Brake</b></td><td><code>S</code> &nbsp;or&nbsp; <code>↓</code></td><td>hold <b>BRAKE</b></td></tr>
+<tr><td><b>Nitro</b></td><td><code>Space</code></td><td>hold <b>BOOST</b></td></tr>
 <tr><td><b>Pause</b></td><td><code>Esc</code></td><td>HUD pause button</td></tr>
 </table>
 

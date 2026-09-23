@@ -174,11 +174,21 @@ html, body {
 .ch-row b { color: var(--ink); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 /* ---------- Touch controls ---------- */
+/* Steering under the left thumb, the gas/brake/boost cluster under the right.
+   The cluster is an L around the thumb's natural pivot: GAS in the corner where
+   the thumb rests, BRAKE beside it, BOOST above it — all three reachable
+   without the hand moving. Boost already forces acceleration on its own, so a
+   single thumb never needs to hold two pedals at once. */
 #touch-controls {
+  --tc-dir: 76px;   /* steering buttons */
+  --tc-gas: 92px;   /* primary pedal, thumb rests here */
+  --tc-aux: 70px;   /* brake and boost */
+  --tc-gap: 10px;
+
   position: absolute;
   left: 0; right: 0;
   bottom: max(14px, env(safe-area-inset-bottom));
-  padding: 0 14px;
+  padding: 0 max(14px, env(safe-area-inset-left)) 0 max(14px, env(safe-area-inset-right));
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -186,31 +196,96 @@ html, body {
   z-index: 15;
   pointer-events: none;
 }
+
+.tc-steer { display: flex; align-items: flex-end; gap: 12px; }
+
+.tc-pedals {
+  display: grid;
+  grid-template-columns: var(--tc-aux) var(--tc-gas);
+  grid-template-rows: var(--tc-aux) var(--tc-gas);
+  gap: var(--tc-gap);
+  align-items: end;
+  justify-items: end;
+}
+.tc-boost { grid-area: 1 / 2; }
+.tc-brake { grid-area: 2 / 1; }
+.tc-gas   { grid-area: 2 / 2; }
+
 .tc {
   pointer-events: auto;
   appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(14, 18, 38, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(14, 18, 38, 0.52);
   backdrop-filter: blur(8px);
   color: var(--ink);
   font: inherit;
   font-weight: 900;
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.08s ease, background 0.08s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  transition: transform 0.08s ease, background 0.08s ease, box-shadow 0.08s ease;
   touch-action: none;
 }
-.tc svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.tc-left, .tc-right { width: 84px; height: 84px; border-radius: 26px; }
-.tc-nitro {
-  width: 92px; height: 62px; border-radius: 20px;
-  margin-bottom: 11px;
-  font-size: 13px; letter-spacing: 2px;
-  background: linear-gradient(180deg, rgba(47, 123, 255, 0.55), rgba(47, 123, 255, 0.25));
-  border-color: rgba(120, 180, 255, 0.5);
+.tc span { font-size: 10px; letter-spacing: 1.2px; line-height: 1; opacity: 0.95; }
+.tc svg {
+  width: 30px; height: 30px;
+  fill: none; stroke: currentColor;
+  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
 }
-.tc.active { transform: scale(0.93); background: rgba(255, 255, 255, 0.28); }
-.tc-nitro.active { background: linear-gradient(180deg, #7ab8ff, #2f7bff); color: #041024; }
+.tc svg.ic-fill { fill: currentColor; stroke: none; }
+
+/* Steering */
+.tc-dir { width: var(--tc-dir); height: var(--tc-dir); border-radius: 24px; }
+.tc-dir svg { width: 38px; height: 38px; stroke-width: 2.8; }
+
+/* Pedals — each colour-coded to what it does */
+.tc-gas {
+  width: var(--tc-gas); height: var(--tc-gas);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(34, 195, 122, 0.6), rgba(34, 195, 122, 0.26));
+  border-color: rgba(94, 255, 176, 0.55);
+  color: #ddfff0;
+}
+.tc-gas svg { width: 34px; height: 34px; }
+
+.tc-brake {
+  width: var(--tc-aux); height: var(--tc-aux);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 59, 92, 0.52), rgba(255, 59, 92, 0.22));
+  border-color: rgba(255, 138, 158, 0.5);
+  color: #ffe2e7;
+}
+
+.tc-boost {
+  width: var(--tc-aux); height: var(--tc-aux);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(47, 123, 255, 0.55), rgba(47, 123, 255, 0.24));
+  border-color: rgba(143, 208, 255, 0.55);
+  color: #dcefff;
+}
+
+/* Pressed states */
+.tc.active { transform: scale(0.93); }
+.tc-dir.active { background: rgba(255, 255, 255, 0.3); }
+.tc-gas.active {
+  background: linear-gradient(180deg, #5effb0, #22c37a);
+  color: #04291a;
+  box-shadow: 0 0 22px rgba(94, 255, 176, 0.5);
+}
+.tc-brake.active {
+  background: linear-gradient(180deg, #ff8a9e, #ff3b5c);
+  color: #2b0410;
+  box-shadow: 0 0 22px rgba(255, 90, 120, 0.5);
+}
+.tc-boost.active {
+  background: linear-gradient(180deg, #8fd0ff, #2f7bff);
+  color: #041024;
+  box-shadow: 0 0 22px rgba(120, 190, 255, 0.55);
+}
 
 /* ---------- Pause button ---------- */
 .icon-btn {
@@ -232,10 +307,21 @@ html, body {
 .icon-btn:active { transform: scale(0.94); }
 
 /* ---------- Small screens / landscape ---------- */
-@media (max-width: 360px) {
+@media (max-width: 400px) {
+  #touch-controls { --tc-dir: 66px; --tc-gas: 80px; --tc-aux: 62px; --tc-gap: 8px; }
+  .tc-steer { gap: 9px; }
+  .tc svg { width: 26px; height: 26px; }
+  .tc-dir svg { width: 32px; height: 32px; }
+  .tc span { font-size: 9px; }
+}
+
+@media (max-width: 340px) {
   .panel { padding: 20px 16px; gap: 11px; }
-  .tc-left, .tc-right { width: 72px; height: 72px; }
-  .tc-nitro { width: 80px; height: 56px; }
+  #touch-controls { --tc-dir: 58px; --tc-gas: 70px; --tc-aux: 55px; --tc-gap: 7px; padding: 0 8px; }
+  .tc-steer { gap: 7px; }
+  .tc svg { width: 22px; height: 22px; }
+  .tc-dir svg { width: 28px; height: 28px; }
+  .tc span { font-size: 8px; letter-spacing: 0.6px; }
   .sb-value { font-size: 36px; }
 }
 
@@ -249,6 +335,6 @@ html, body {
   .btn { padding: 11px 16px; min-height: 42px; }
   .btn-primary { font-size: 17px; padding: 12px 16px; }
   .sb-value { font-size: 32px; }
-  #touch-controls { bottom: 10px; }
-  .tc-left, .tc-right { width: 70px; height: 70px; }
+  #touch-controls { bottom: 10px; --tc-dir: 62px; --tc-gas: 72px; --tc-aux: 56px; --tc-gap: 8px; }
+  .tc span { font-size: 9px; }
 }

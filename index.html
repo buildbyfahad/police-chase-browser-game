@@ -31,7 +31,7 @@
 
           <div class="controls-help">
             <div class="ch-row"><b>Desktop</b><span>A/D or ←/→ steer · W/S throttle · SPACE nitro · ESC pause</span></div>
-            <div class="ch-row"><b>Mobile</b><span>Hold LEFT / RIGHT · tap NITRO</span></div>
+            <div class="ch-row"><b>Mobile</b><span>Steer with LEFT / RIGHT · GAS, BRAKE &amp; BOOST under your other thumb</span></div>
           </div>
         </div>
       </section>
@@ -73,10 +73,33 @@
       </section>
 
       <!-- ===== Touch controls ===== -->
-      <div id="touch-controls" class="hidden" aria-hidden="true">
-        <button class="tc tc-left" data-ctl="left" aria-label="Steer left"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button>
-        <button class="tc tc-nitro" data-ctl="nitro" aria-label="Nitro">NITRO</button>
-        <button class="tc tc-right" data-ctl="right" aria-label="Steer right"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+      <!-- Steering sits under the left thumb; gas/brake/boost are grouped as a
+           single cluster under the right thumb, arranged so one thumb can reach
+           all three without lifting off. -->
+      <div id="touch-controls" class="hidden">
+        <div class="tc-steer">
+          <button class="tc tc-dir" data-ctl="left" aria-label="Steer left">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <button class="tc tc-dir" data-ctl="right" aria-label="Steer right">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="tc-pedals">
+          <button class="tc tc-boost" data-ctl="nitro" aria-label="Boost">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="ic-fill"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+            <span>BOOST</span>
+          </button>
+          <button class="tc tc-brake" data-ctl="brake" aria-label="Brake">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 3h7L21 8.5v7L15.5 21h-7L3 15.5v-7z"/><path d="M8 12h8"/></svg>
+            <span>BRAKE</span>
+          </button>
+          <button class="tc tc-gas" data-ctl="accelerate" aria-label="Accelerate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 18.5l6-6 6 6"/></svg>
+            <span>GAS</span>
+          </button>
+        </div>
       </div>
 
       <button id="btn-pause" class="icon-btn hidden" aria-label="Pause">

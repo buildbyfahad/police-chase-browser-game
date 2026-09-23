@@ -60,13 +60,13 @@ export class PickupManager {
     this.powerTimer = 6;
   }
 
-  update(dt: number, playerSpeed: number, time: number, player: Player, offsetAt: (y: number) => number): void {
+  update(dt: number, playerSpeed: number, time: number, player: Player): void {
     const magnetOn = player.magnetActive;
 
     for (const list of [this.coins, this.powerUps]) {
       for (const p of list) {
         if (!p.active) continue;
-        p.update(playerSpeed, dt, time, offsetAt);
+        p.update(playerSpeed, dt, time);
 
         if (magnetOn && p.kind === 'coin') {
           const dist = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);

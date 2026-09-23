@@ -2,7 +2,7 @@
  * The living backdrop behind the landing screen.
  *
  * Rather than ship a trailer video, the menu sits over the game actually
- * running: real road, real bends, real traffic, a car driving itself and a
+ * running: real road, real traffic, a car driving itself and a
  * cruiser on its tail. It reuses the same managers as play, so it can never
  * drift out of step with what the game looks like.
  *
@@ -76,7 +76,7 @@ export class AttractScene extends Phaser.Scene {
     const tier = DIFFICULTY_TIERS[1];
 
     this.road.update(CRUISE_SPEED, dt);
-    this.traffic.update(dt, CRUISE_SPEED, tier, (y) => this.road.offsetAt(y));
+    this.traffic.update(dt, CRUISE_SPEED, tier);
 
     this.steer(dt);
     this.updateCop(dt);
@@ -99,7 +99,7 @@ export class AttractScene extends Phaser.Scene {
 
     this.localX = Phaser.Math.Linear(this.localX, this.targetLocalX, Math.min(1, dt * 2.2));
     const prevX = this.car.x;
-    this.car.x = ROAD_CENTER + this.road.offsetAt(this.car.y) + this.localX;
+    this.car.x = ROAD_CENTER + this.localX;
     this.car.setAngle(Phaser.Math.Clamp((this.car.x - prevX) / dt / 60, -10, 10));
   }
 

@@ -45,11 +45,11 @@ export class TrafficManager {
   }
 
   /** @param playerSpeed world scroll speed in px/s */
-  update(dt: number, playerSpeed: number, diff: DifficultySnapshot, offsetAt: (y: number) => number): void {
+  update(dt: number, playerSpeed: number, diff: DifficultySnapshot): void {
     for (const v of this.pool) {
       if (!v.active) continue;
       const ownSpeed = v.isObstacle ? 0 : v.speedFactor * PLAYER_BASE_SPEED * diff.trafficSpeedScale;
-      v.advance(playerSpeed - ownSpeed, dt, offsetAt);
+      v.advance(playerSpeed - ownSpeed, dt);
       if (v.y > DESPAWN_BELOW || v.y < DESPAWN_ABOVE) v.despawn();
     }
 

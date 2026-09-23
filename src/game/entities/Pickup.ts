@@ -14,8 +14,7 @@ const TEXTURES: Record<PickupKind, string> = {
 export class Pickup extends Phaser.GameObjects.Image {
   kind: PickupKind = 'coin';
   radius = COIN_SIZE / 2;
-  /** Offset from the road centreline; magnet pull nudges this rather than x
-   *  directly, so an attracted coin still travels with the bend. */
+  /** Offset from the road centreline. */
   localX = 0;
   /** Phase offset so a row of coins shimmers in a wave rather than in sync. */
   private phase = 0;
@@ -44,9 +43,8 @@ export class Pickup extends Phaser.GameObjects.Image {
     this.setActive(false).setVisible(false);
   }
 
-  update(scrollSpeed: number, dt: number, time: number, offsetAt: (y: number) => number): void {
+  update(scrollSpeed: number, dt: number, time: number): void {
     this.y += scrollSpeed * dt;
-    this.x = ROAD_CENTER + offsetAt(this.y) + this.localX;
     if (this.kind === 'coin') {
       // Squash the x axis to fake a spinning coin
       const spin = Math.abs(Math.cos(time * 0.004 + this.phase));

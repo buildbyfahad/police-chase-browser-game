@@ -17,8 +17,7 @@ export class Vehicle extends Phaser.GameObjects.Image {
   hitW = 40;
   hitH = 80;
   lane = 0;
-  /** Position relative to the road centreline, so it stays on the tarmac
-   *  however far the road has bent by the time it reaches the player. */
+  /** Position relative to the road centreline. */
   localX = 0;
   /** Set once the player has drawn level, so a near miss only scores once. */
   scoredNearMiss = false;
@@ -77,8 +76,7 @@ export class Vehicle extends Phaser.GameObjects.Image {
    * `closingSpeed` is how fast the world is moving past this vehicle, i.e.
    * playerSpeed - ownSpeed. Positive means the player is gaining on it.
    */
-  advance(closingSpeed: number, dt: number, offsetAt: (y: number) => number): void {
+  advance(closingSpeed: number, dt: number): void {
     this.y += closingSpeed * dt;
-    this.x = ROAD_CENTER + offsetAt(this.y) + this.localX;
   }
 }

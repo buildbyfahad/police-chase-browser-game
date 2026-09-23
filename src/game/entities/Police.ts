@@ -75,7 +75,7 @@ export class Police extends Phaser.GameObjects.Container {
    * @param playerX      lateral target to home in on
    * @param steerRate    px/s of sideways pursuit — rises with difficulty
    */
-  update(dt: number, playerSpeed: number, playerX: number, steerRate: number, curveOffset: number): void {
+  update(dt: number, playerSpeed: number, playerX: number, steerRate: number): void {
     // Closing in means moving up the screen toward the player
     this.y += (playerSpeed - this.speed) * dt;
     // Never let a cruiser overtake and block from in front. The lower bound
@@ -83,12 +83,7 @@ export class Police extends Phaser.GameObjects.Container {
     // actually fall far enough back to count as escaped.
     this.y = Phaser.Math.Clamp(this.y, PLAYER_Y - 4, GAME_HEIGHT + 800);
 
-    // Clamp to the road where it actually is, not where it would be if straight
-    const target = Phaser.Math.Clamp(
-      playerX + this.laneBias,
-      PLAYER_MIN_X + curveOffset,
-      PLAYER_MAX_X + curveOffset,
-    );
+    const target = Phaser.Math.Clamp(playerX + this.laneBias, PLAYER_MIN_X, PLAYER_MAX_X);
     const desired = Phaser.Math.Clamp((target - this.x) * 3.2, -steerRate, steerRate);
     this.steerVel += Phaser.Math.Clamp(desired - this.steerVel, -2200 * dt, 2200 * dt);
     this.x += this.steerVel * dt;

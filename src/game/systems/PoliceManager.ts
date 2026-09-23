@@ -55,7 +55,7 @@ export class PoliceManager {
     this.caught = false;
   }
 
-  update(dt: number, playerSpeed: number, playerX: number, diff: DifficultySnapshot, curveOffset: number): void {
+  update(dt: number, playerSpeed: number, playerX: number, diff: DifficultySnapshot): void {
     if (this.caught) return;
 
     const cruise = (PLAYER_BASE_SPEED + diff.roadSpeedBonus) * diff.policeSpeedScale;
@@ -77,7 +77,7 @@ export class PoliceManager {
         p.speed = Math.max(cruise + RUBBER_BAND, playerSpeed + 70);
       }
 
-      p.update(dt, playerSpeed, playerX, steerRate, curveOffset);
+      p.update(dt, playerSpeed, playerX, steerRate);
 
       if (p.y > POLICE_ESCAPE_Y) {
         // Only a cruiser that actually got on your tail counts as shaken off

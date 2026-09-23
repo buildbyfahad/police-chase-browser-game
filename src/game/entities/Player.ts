@@ -5,7 +5,6 @@
  */
 import Phaser from 'phaser';
 import {
-  CURVE_DRIFT,
   MAGNET_DURATION,
   NITRO_DRAIN,
   NITRO_MAX,
@@ -19,8 +18,9 @@ import {
   PLAYER_BRAKE,
   PLAYER_COAST,
   PLAYER_MAX_SPEED,
-  PLAYER_LIMIT_X,
+  PLAYER_MAX_X,
   PLAYER_MIN_SPEED,
+  PLAYER_MIN_X,
   PLAYER_STEER_ACCEL,
   PLAYER_STEER_SPEED,
   PLAYER_Y,
@@ -109,12 +109,12 @@ export class Player extends Phaser.GameObjects.Container {
     return NITRO_MAX * this.stats.nitro;
   }
 
-  update(dt: number, input: InputState, now: number, curve: { offset: number; rate: number }): void {
+  update(dt: number, input: InputState, now: number): void {
     if (this.crashed) return;
 
     this.updateNitro(dt, input);
     this.updateSpeed(dt, input);
-    this.updateSteering(dt, input, curve);
+    this.updateSteering(dt, input);
     this.updatePowerUps(now);
   }
 
@@ -169,7 +169,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.speed = Math.max(PLAYER_MIN_SPEED, this.speed);
   }
 
-  private updateSteering(dt: number, input: InputState, curve: { offset: number; rate: number }): void {
+  private updateSteering(dt: number, input: InputState): void {
     const dir = (input.left ? -1 : 0) + (input.right ? 1 : 0);
     // Steering grip falls off a little at very high speed
     const grip = 1 - Math.min(0.25, (this.speed - PLAYER_BASE_SPEED) / 2600);
@@ -177,16 +177,9 @@ export class Player extends Phaser.GameObjects.Container {
     const step = PLAYER_STEER_ACCEL * this.stats.handling * dt;
     this.steerVel += Phaser.Math.Clamp(target - this.steerVel, -step, step);
 
-    // A bend carries the car with it, then throws it toward the outside of
-    // the corner — holding a line through a sweeper takes a correction.
-    const carried = curve.rate * dt;
-    const thrown = -curve.rate * CURVE_DRIFT * dt;
-    const minX = ROAD_CENTER + curve.offset - PLAYER_LIMIT_X;
-    const maxX = ROAD_CENTER + curve.offset + PLAYER_LIMIT_X;
-
-    this.x = Phaser.Math.Clamp(this.x + this.steerVel * dt + carried + thrown, minX, maxX);
+    this.x = Phaser.Math.Clamp(this.x + this.steerVel * dt, PLAYER_MIN_X, PLAYER_MAX_X);
     // Scrubbing a barrier kills sideways momentum rather than sticking
-    if (this.x <= minX || this.x >= maxX) this.steerVel = 0;
+    if (this.x <= PLAYER_MIN_X || this.x >= PLAYER_MAX_X) this.steerVel = 0;
 
     this.chassis.setAngle((this.steerVel / (PLAYER_STEER_SPEED * this.stats.handling)) * 9);
   }

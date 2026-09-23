@@ -117,7 +117,6 @@ export class GameScene extends Phaser.Scene {
           pickups: this.pickups,
           score: this.score,
           difficulty: this.difficulty,
-          road: this.road,
         })),
       );
     }
@@ -156,8 +155,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.player.speedBonus = diff.roadSpeedBonus;
-    const curve = { offset: this.road.offset, rate: this.road.curveRate };
-    this.player.update(dt, Input.state, time, curve);
+    this.player.update(dt, Input.state, time);
 
     if (this.player.nitroJustFired) {
       Audio.playNitro();
@@ -166,10 +164,9 @@ export class GameScene extends Phaser.Scene {
 
     const speed = this.player.speed;
     this.road.update(speed, dt);
-    const offsetAt = (y: number) => this.road.offsetAt(y);
-    this.traffic.update(dt, speed, diff, offsetAt);
-    this.pickups.update(dt, speed, time, this.player, offsetAt);
-    this.police.update(dt, speed, this.player.x, diff, this.road.offset);
+    this.traffic.update(dt, speed, diff);
+    this.pickups.update(dt, speed, time, this.player);
+    this.police.update(dt, speed, this.player.x, diff);
 
     // Police may have ended the run inside its own update
     if (!this.running) return;

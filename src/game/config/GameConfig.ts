@@ -17,18 +17,16 @@ export const LANE_WIDTH = ROAD_WIDTH / LANE_COUNT;
 export const ROAD_CENTER = GAME_WIDTH / 2;
 
 /**
- * Lane centre measured from the road's own centreline, so it stays valid
- * however far the road has bent. Everything that lives on the road stores its
- * position in these local coordinates and is placed at
- * `ROAD_CENTER + curveOffset + localX` each frame.
+ * Lane centre measured from the road's own centreline. Road-bound objects
+ * store their position this way and are placed at `ROAD_CENTER + localX`.
  */
 export function laneLocalX(lane: number): number {
   return LANE_WIDTH * (lane + 0.5) - ROAD_WIDTH / 2;
 }
 
-/** Screen x of a lane centre, given the road's current lateral offset. */
-export function laneX(lane: number, curveOffset = 0): number {
-  return ROAD_CENTER + curveOffset + laneLocalX(lane);
+/** Screen x of a lane centre. */
+export function laneX(lane: number): number {
+  return ROAD_CENTER + laneLocalX(lane);
 }
 
 /** How far from the road centre the player may stray, in either direction. */
@@ -36,16 +34,6 @@ export const PLAYER_LIMIT_X = ROAD_WIDTH / 2 - 26;
 /** Straight-road convenience bounds, still used for spawn defaults. */
 export const PLAYER_MIN_X = ROAD_CENTER - PLAYER_LIMIT_X;
 export const PLAYER_MAX_X = ROAD_CENTER + PLAYER_LIMIT_X;
-
-// ---- Road curvature ----
-/** Furthest the road's centreline drifts from screen centre, in px. */
-export const CURVE_MAX = 60;
-/** Metres of road per full cycle of each bend wave — two out-of-sync waves
- *  give long sweepers with the occasional tightening kink. */
-export const CURVE_WAVE_A = 620;
-export const CURVE_WAVE_B = 265;
-/** How hard a bend pushes the car toward the outside of the corner. */
-export const CURVE_DRIFT = 0.85;
 
 // ---- Distance ----
 /** Rendered pixels that make up one in-game metre. */

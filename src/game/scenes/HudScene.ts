@@ -15,6 +15,8 @@ export interface HudState {
   distanceKm: number;
   coins: number;
   nitro: number;
+  /** Bottle capacity for the current car — upgrades make it bigger. */
+  nitroMax: number;
   nitroActive: boolean;
   shield: boolean;
   magnet: boolean;
@@ -28,6 +30,7 @@ export function createHudState(): HudState {
     distanceKm: 0,
     coins: 0,
     nitro: 0,
+    nitroMax: NITRO_MAX,
     nitroActive: false,
     shield: false,
     magnet: false,
@@ -184,7 +187,7 @@ export class HudScene extends Phaser.Scene {
     }
 
     // Nitro meter
-    const pct = Phaser.Math.Clamp(s.nitro / NITRO_MAX, 0, 1);
+    const pct = Phaser.Math.Clamp(s.nitro / (s.nitroMax || NITRO_MAX), 0, 1);
     this.nitroFill.displayWidth = Math.max(0.001, (NITRO_BAR_W - 2) * pct);
     this.nitroFill.fillColor = s.nitroActive ? 0x8fd0ff : pct < 0.12 ? 0x6a7391 : 0x2f7bff;
     this.nitroLabel.setColor(s.nitroActive ? '#8fd0ff' : '#8d97c4');

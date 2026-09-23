@@ -15,6 +15,9 @@ export interface SaveData {
   soundEnabled: boolean;
   controlSide: ControlSide;
   selectedCar: string;
+  /** Ids of every car the player owns. The starter car is always present. */
+  ownedCars: string[];
+  /** Upgrade levels keyed "carId.stat", e.g. "muscle.handling". */
   carUpgrades: Record<string, number>;
 }
 
@@ -25,7 +28,8 @@ const DEFAULTS: SaveData = {
   totalCoins: 0,
   soundEnabled: true,
   controlSide: 'right',
-  selectedCar: 'default',
+  selectedCar: 'street',
+  ownedCars: ['street'],
   carUpgrades: {},
 };
 
@@ -47,6 +51,7 @@ class StorageManagerImpl {
         soundEnabled: typeof parsed.soundEnabled === 'boolean' ? parsed.soundEnabled : DEFAULTS.soundEnabled,
         controlSide: parsed.controlSide === 'left' ? 'left' : DEFAULTS.controlSide,
         selectedCar: typeof parsed.selectedCar === 'string' ? parsed.selectedCar : DEFAULTS.selectedCar,
+        ownedCars: sanitiseOwned(parsed.ownedCars),
         carUpgrades: parsed.carUpgrades && typeof parsed.carUpgrades === 'object' ? parsed.carUpgrades : {},
       };
     } catch {
@@ -71,6 +76,14 @@ class StorageManagerImpl {
     this.persist();
   }
 
+  /** Deducts a purchase. Returns false (and changes nothing) if short. */
+  spendCoins(amount: number): boolean {
+    if (amount < 0 || this.cache.totalCoins < amount) return false;
+    this.cache.totalCoins -= amount;
+    this.persist();
+    return true;
+  }
+
   /** Records a finished run. Returns true when it beat the stored best. */
   submitRun(score: number, coins: number): boolean {
     const isBest = score > this.cache.bestScore;
@@ -79,6 +92,12 @@ class StorageManagerImpl {
     this.persist();
     return isBest;
   }
+}
+
+/** The starter car can never be missing, however mangled the saved data is. */
+function sanitiseOwned(value: unknown): string[] {
+  const list = Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
+  return list.includes('street') ? list : ['street', ...list];
 }
 
 function numberOr(value: unknown, fallback: number): number {

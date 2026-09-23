@@ -6,8 +6,22 @@
  */
 import Phaser from 'phaser';
 import { GAME_WIDTH, LANE_COUNT, LANE_WIDTH, ROAD_WIDTH, TRAFFIC_KINDS } from '../config/GameConfig';
+import { CARS } from '../config/Cars';
 
 export const TEX_SCALE = 2;
+
+/**
+ * Car sprites as data URLs, so the DOM garage screen can show the exact same
+ * art the game draws without a second set of assets.
+ */
+export function carThumbnails(scene: Phaser.Scene): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const car of CARS) {
+    const source = scene.textures.get(`tex-car-${car.id}`).getSourceImage();
+    if (source instanceof HTMLCanvasElement) out[car.id] = source.toDataURL();
+  }
+  return out;
+}
 
 const ROAD_TILE_H = 160;
 const GROUND_TILE_H = 300;
@@ -34,7 +48,10 @@ export function createTextures(scene: Phaser.Scene): void {
   const g = scene.add.graphics();
 
   // --- Vehicles ---
-  drawVehicle(g, 'tex-player', 50, 92, PALETTES.player, 'player');
+  // One sprite per garage car, so switching cars is a texture swap
+  for (const car of CARS) {
+    drawVehicle(g, `tex-car-${car.id}`, 50, 92, car.palette, 'player');
+  }
   for (const kind of TRAFFIC_KINDS) {
     const style = kind.key === 'truck' || kind.key === 'bus' ? 'heavy' : 'car';
     drawVehicle(g, `tex-${kind.key}`, kind.width, kind.height, PALETTES[kind.key], style);

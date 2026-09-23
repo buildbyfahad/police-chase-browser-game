@@ -4,7 +4,7 @@
  * top-level description of what a frame of Police Chase actually is.
  */
 import Phaser from 'phaser';
-import { GAME_HEIGHT, GAME_WIDTH, NITRO_MAX, NITRO_MIN_TO_FIRE } from '../config/GameConfig';
+import { GAME_HEIGHT, GAME_WIDTH, NITRO_MIN_TO_FIRE } from '../config/GameConfig';
 import { Player } from '../entities/Player';
 import type { PickupKind } from '../entities/Pickup';
 import { Audio } from '../systems/AudioManager';
@@ -181,7 +181,7 @@ export class GameScene extends Phaser.Scene {
     // so a press with a dead bottle never looks like a boost.
     UI.setBoostState(
       this.player.nitroActive,
-      this.player.nitroFuel / NITRO_MAX,
+      this.player.nitroFuel / this.player.nitroCapacity,
       this.player.nitroActive || this.player.nitroFuel >= NITRO_MIN_TO_FIRE,
     );
     Audio.setEngine(this.player.throttle, this.player.nitroActive);
@@ -197,6 +197,7 @@ export class GameScene extends Phaser.Scene {
     s.distanceKm = this.score.distanceKm;
     s.coins = stats.coins;
     s.nitro = this.player.nitroFuel;
+    s.nitroMax = this.player.nitroCapacity;
     s.nitroActive = this.player.nitroActive;
     s.shield = this.player.shieldActive;
     s.magnet = this.player.magnetActive;

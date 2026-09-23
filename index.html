@@ -27,6 +27,8 @@
             <div class="stat"><span class="stat-label">TOTAL COINS</span><span class="stat-value" id="menu-coins">0</span></div>
           </div>
 
+          <button id="btn-garage" class="btn">🔧 GARAGE</button>
+
           <div class="settings-row">
             <button id="btn-sound" class="btn btn-ghost" aria-pressed="true">SOUND: ON</button>
             <button id="btn-side" class="btn btn-ghost">PEDALS: RIGHT</button>
@@ -36,6 +38,27 @@
             <div class="ch-row"><b>Desktop</b><span>A/D or ←/→ steer · W/S throttle · SPACE nitro · ESC pause</span></div>
             <div class="ch-row"><b>Mobile</b><span>Steer with LEFT / RIGHT · GAS, BRAKE &amp; BOOST under your other thumb</span></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ===== Garage ===== -->
+      <section id="screen-garage" class="overlay hidden">
+        <div class="panel panel-wide">
+          <div class="garage-head">
+            <h2 class="heading">GARAGE</h2>
+            <div class="coin-pill"><span class="coin-dot"></span><b id="garage-coins">0</b></div>
+          </div>
+
+          <div id="garage-cars" class="car-list"></div>
+
+          <div class="upgrade-head">
+            <span id="garage-car-name">Street</span>
+            <span id="garage-car-blurb" class="blurb"></span>
+          </div>
+          <div id="garage-upgrades" class="upgrade-list"></div>
+
+          <p id="garage-msg" class="garage-msg"></p>
+          <button id="btn-garage-back" class="btn btn-primary">BACK</button>
         </div>
       </section>
 

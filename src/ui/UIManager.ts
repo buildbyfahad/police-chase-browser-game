@@ -9,11 +9,13 @@ import { Audio } from '../game/systems/AudioManager';
 import type { GameOverPayload } from '../game/systems/EventBus';
 import { formatScore, formatTime } from '../game/systems/ScoreManager';
 import { Storage, type ControlSide } from '../game/systems/StorageManager';
+import { GarageUI } from './GarageUI';
 
-export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER';
+export type GameState = 'MENU' | 'GARAGE' | 'PLAYING' | 'PAUSED' | 'GAME_OVER';
 
 export interface UICallbacks {
   onPlay: () => void;
+  onGarage: () => void;
   onResume: () => void;
   onRestart: () => void;
   onHome: () => void;
@@ -34,6 +36,8 @@ export class UIManager {
   private readonly menu = el('screen-menu');
   private readonly pauseScreen = el('screen-pause');
   private readonly gameOver = el('screen-gameover');
+  private readonly garageScreen = el('screen-garage');
+  readonly garage = new GarageUI();
   private readonly touchControls = el('touch-controls');
   private readonly pauseBtn = el<HTMLButtonElement>('btn-pause');
   private readonly soundBtn = el<HTMLButtonElement>('btn-sound');
@@ -59,6 +63,8 @@ export class UIManager {
     this.callbacks = callbacks;
 
     this.bind('btn-play', () => this.callbacks.onPlay());
+    this.bind('btn-garage', () => this.callbacks.onGarage());
+    this.bind('btn-garage-back', () => this.setState('MENU'));
     this.bind('btn-resume', () => this.callbacks.onResume());
     this.bind('btn-restart-pause', () => this.callbacks.onRestart());
     this.bind('btn-home-pause', () => this.callbacks.onHome());
@@ -161,6 +167,9 @@ export class UIManager {
     this.menu.classList.toggle('hidden', state !== 'MENU');
     this.pauseScreen.classList.toggle('hidden', state !== 'PAUSED');
     this.gameOver.classList.toggle('hidden', state !== 'GAME_OVER');
+    this.garageScreen.classList.toggle('hidden', state !== 'GARAGE');
+    if (state === 'GARAGE') this.garage.render();
+    if (state === 'MENU') this.refreshMenuStats();
 
     const inPlay = state === 'PLAYING';
     this.touchControls.classList.toggle('hidden', !inPlay || !this.hasTouch);

@@ -44,6 +44,7 @@ export class GameManager {
 
     UI.init({
       onPlay: () => this.startGame(),
+      onGarage: () => UI.setState('GARAGE'),
       onResume: () => this.resume(),
       onRestart: () => this.startGame(),
       onHome: () => this.goHome(),

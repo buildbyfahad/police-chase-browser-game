@@ -3,8 +3,9 @@
  * There are no network assets, so this is a single frame of work.
  */
 import Phaser from 'phaser';
-import { createTextures } from '../utils/Textures';
+import { carThumbnails, createTextures } from '../utils/Textures';
 import { Bus, EVENT } from '../systems/EventBus';
+import { UI } from '../../ui/UIManager';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -13,6 +14,8 @@ export class BootScene extends Phaser.Scene {
 
   create(): void {
     createTextures(this);
+    // Hand the car art to the DOM garage so both show the same sprites
+    UI.garage.setThumbnails(carThumbnails(this));
     Bus.emit(EVENT.READY);
   }
 }

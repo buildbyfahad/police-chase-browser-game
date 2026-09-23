@@ -73,9 +73,9 @@ No install. No account. No downloads. Just hit **PLAY**.
   <sub>Steering one side, GAS / BRAKE / BOOST the other</sub>
 </td>
 <td align="center">
-  <img src="docs/screenshots/pause.png" width="240" alt="Pause screen"><br>
-  <b>Pause</b><br>
-  <sub><code>Esc</code> on desktop, HUD button on touch</sub>
+  <img src="docs/screenshots/garage.png" width="240" alt="Garage screen"><br>
+  <b>Garage</b><br>
+  <sub>Four cars and five upgrade tracks, bought with coins</sub>
 </td>
 <td align="center">
   <img src="docs/screenshots/mobile-menu.png" width="240" alt="Landing screen on a phone"><br>
@@ -147,6 +147,27 @@ press that does nothing.
 Best score, total coins and your sound setting persist in the browser.
 
 ---
+
+## 🔧 Garage
+
+Coins you collect are spent here. Four cars, each with its own handling
+character, and five upgrade tracks per car.
+
+| Car | Price | Character |
+| --- | --- | --- |
+| **Street** | free | Balanced baseline |
+| **Bolt** | 900 | −6% top speed, **+24% handling** — threads gaps nothing else fits |
+| **Muscle** | 2,400 | **+20% top speed**, −17% handling — pick your lane early |
+| **GT** | 5,200 | +13% speed, +10% handling, +16% nitro — no weaknesses |
+
+Each car has its own **Top Speed / Acceleration / Handling / Nitro / Shield**
+tracks, five levels apiece at +6% a level (shield scales faster, and a maxed
+shield track starts every run with one already up). Levels cost 55 → 150 → 271
+→ 411 → 567 coins, so a fully maxed car is 7,270 coins on top of its price.
+
+Upgrades are **per car**, so buying a new one is a real decision rather than an
+automatic straight upgrade. Stats resolve to multipliers the Player applies at
+the start of each run, which means a garage visit takes effect immediately.
 
 ## 🎨 Everything is procedural
 
@@ -245,12 +266,12 @@ module — from production builds.
 
 ## 🛣️ Not in this version
 
-No accounts, payments, ads, multiplayer, backend or global leaderboard — the
-goal was to make the core loop fun first.
+No accounts, payments, ads, multiplayer, backend or global leaderboard — those
+need a server, and the goal was to make the core loop fun first.
 
-The architecture leaves room for what comes next: `selectedCar` and
-`carUpgrades` are already in the save format, ready for a garage, car upgrades,
-missions and additional environments.
+Still on the list: missions and objectives, extra environments (desert, snow,
+highway), and more police types — SUVs, heavy cruisers, roadblocks and spike
+strips.
 
 <div align="center">
 <br>

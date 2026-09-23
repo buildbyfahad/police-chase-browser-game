@@ -180,10 +180,13 @@ html, body {
    without the hand moving. Boost already forces acceleration on its own, so a
    single thumb never needs to hold two pedals at once. */
 #touch-controls {
-  --tc-dir: 76px;   /* steering buttons */
-  --tc-gas: 92px;   /* primary pedal, thumb rests here */
-  --tc-aux: 70px;   /* brake and boost */
-  --tc-gap: 10px;
+  --tc-dir: 76px;     /* steering buttons */
+  --tc-gas-w: 84px;   /* accelerator: tall treadle, thumb rests here */
+  --tc-gas-h: 104px;
+  --tc-brake-w: 84px; /* brake: wide pad */
+  --tc-brake-h: 84px;
+  --tc-boost-w: 54px; /* nitrous bottle */
+  --tc-boost-h: 90px;
 
   position: absolute;
   left: 0; right: 0;
@@ -201,98 +204,83 @@ html, body {
 
 .tc-pedals {
   display: grid;
-  grid-template-columns: var(--tc-aux) var(--tc-gas);
-  grid-template-rows: var(--tc-aux) var(--tc-gas);
-  gap: var(--tc-gap);
+  grid-template-columns: var(--tc-brake-w) var(--tc-gas-w);
+  grid-template-rows: var(--tc-boost-h) var(--tc-gas-h);
+  column-gap: 2px;
+  row-gap: 2px;
   align-items: end;
-  justify-items: end;
+  justify-items: center;
 }
 .tc-boost { grid-area: 1 / 2; }
 .tc-brake { grid-area: 2 / 1; }
 .tc-gas   { grid-area: 2 / 2; }
 
+/* Steering keeps a light frame so it reads as a control surface. The pedals
+   deliberately have none — the part itself is the button. */
 .tc {
   pointer-events: auto;
   appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(14, 18, 38, 0.52);
-  backdrop-filter: blur(8px);
+  border: none;
+  background: none;
   color: var(--ink);
   font: inherit;
-  font-weight: 900;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
   padding: 0;
-  transition: transform 0.08s ease, background 0.08s ease, box-shadow 0.08s ease;
   touch-action: none;
 }
-.tc span { font-size: 10px; letter-spacing: 1.2px; line-height: 1; opacity: 0.95; }
-.tc svg {
-  width: 33px; height: 33px;
+
+.tc-dir {
+  width: var(--tc-dir); height: var(--tc-dir);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(14, 18, 38, 0.5);
+  backdrop-filter: blur(8px);
+  transition: transform 0.08s ease, background 0.08s ease;
+}
+.tc-dir svg {
+  width: 38px; height: 38px;
   fill: none; stroke: currentColor;
-  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round;
 }
-/* Icon parts: solid pads/bodies read as real objects at thumb size, thin
-   strokes carry the hinge, arm and floor that identify each pedal. */
-.tc svg .ic-solid { fill: currentColor; stroke: none; }
-.tc svg .ic-line { fill: none; stroke: currentColor; stroke-width: 1.9; }
-/* Filled pad with a matching stroke, so the corners round off naturally */
-.tc svg .ic-pad { fill: currentColor; stroke: currentColor; stroke-width: 2.1; stroke-linejoin: round; }
-/* Cut-through band on the nitrous bottle — punched out in the button colour */
-.tc svg .ic-cut { fill: none; stroke: currentColor; stroke-width: 1.8; opacity: 0.32; }
+.tc-dir.active { transform: scale(0.93); background: rgba(255, 255, 255, 0.3); }
 
-/* Steering */
-.tc-dir { width: var(--tc-dir); height: var(--tc-dir); border-radius: 24px; }
-.tc-dir svg { width: 38px; height: 38px; stroke-width: 2.8; }
+/* ---- Pedals ---- */
+.tc-gas   { width: var(--tc-gas-w);   height: var(--tc-gas-h); }
+.tc-brake { width: var(--tc-brake-w); height: var(--tc-brake-h); align-items: flex-end; }
+.tc-boost { width: var(--tc-boost-w); height: var(--tc-boost-h); }
 
-/* Pedals — each colour-coded to what it does */
-.tc-gas {
-  width: var(--tc-gas); height: var(--tc-gas);
-  border-radius: 28px;
-  background: linear-gradient(180deg, rgba(34, 195, 122, 0.6), rgba(34, 195, 122, 0.26));
-  border-color: rgba(94, 255, 176, 0.55);
-  color: #ddfff0;
-}
-.tc-gas svg { width: 38px; height: 38px; }
-
-.tc-brake {
-  width: var(--tc-aux); height: var(--tc-aux);
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 59, 92, 0.52), rgba(255, 59, 92, 0.22));
-  border-color: rgba(255, 138, 158, 0.5);
-  color: #ffe2e7;
+.tc-gas svg, .tc-brake svg, .tc-boost svg {
+  width: 100%; height: 100%;
+  overflow: visible;
+  /* Grounds the part against the road without drawing a container */
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+  transition: filter 0.09s ease;
 }
 
-.tc-boost {
-  width: var(--tc-aux); height: var(--tc-aux);
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(47, 123, 255, 0.55), rgba(47, 123, 255, 0.24));
-  border-color: rgba(143, 208, 255, 0.55);
-  color: #dcefff;
-}
+/* The contact shadow on the floor, drawn inside each SVG */
+.pd-shadow { fill: #000; opacity: 0.45; }
 
-/* Pressed states */
-.tc.active { transform: scale(0.93); }
-.tc-dir.active { background: rgba(255, 255, 255, 0.3); }
-.tc-gas.active {
-  background: linear-gradient(180deg, #5effb0, #22c37a);
-  color: #04291a;
-  box-shadow: 0 0 22px rgba(94, 255, 176, 0.5);
-}
-.tc-brake.active {
-  background: linear-gradient(180deg, #ff8a9e, #ff3b5c);
-  color: #2b0410;
-  box-shadow: 0 0 22px rgba(255, 90, 120, 0.5);
-}
-.tc-boost.active {
-  background: linear-gradient(180deg, #8fd0ff, #2f7bff);
-  color: #041024;
-  box-shadow: 0 0 22px rgba(120, 190, 255, 0.55);
-}
+/* The pedal's resting lean lives here rather than on the SVG element, because
+   a CSS transform replaces the element's transform attribute outright — mixing
+   the two makes the pedal jump to a different pivot the moment it is pressed.
+   Pressing then flattens the lean, the way a real accelerator goes down. */
+.pd-pad { transition: transform 0.09s ease; }
+
+.tc-gas .pd-pad { transform: rotate(-11deg); transform-origin: 45% 88%; }
+.tc-gas.active .pd-pad { transform: rotate(-3.5deg) translateY(2px) scaleY(0.97); }
+
+.tc-brake .pd-pad { transform-origin: 50% 100%; }
+.tc-brake.active .pd-pad { transform: translateY(7px) scaleY(0.94); }
+
+.tc-boost svg { transition: transform 0.09s ease, filter 0.09s ease; }
+.tc-boost.active svg { transform: scale(0.95); }
+
+.tc-gas.active svg   { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(94, 255, 176, 0.85)); }
+.tc-brake.active svg { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(255, 90, 120, 0.85)); }
+.tc-boost.active svg { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 18px rgba(120, 190, 255, 0.9)); }
 
 /* ---------- Pause button ---------- */
 .icon-btn {
@@ -315,20 +303,27 @@ html, body {
 
 /* ---------- Small screens / landscape ---------- */
 @media (max-width: 400px) {
-  #touch-controls { --tc-dir: 66px; --tc-gas: 80px; --tc-aux: 62px; --tc-gap: 8px; }
+  #touch-controls {
+    --tc-dir: 66px;
+    --tc-gas-w: 72px; --tc-gas-h: 92px;
+    --tc-brake-w: 74px; --tc-brake-h: 74px;
+    --tc-boost-w: 52px; --tc-boost-h: 78px;
+  }
   .tc-steer { gap: 9px; }
-  .tc svg { width: 29px; height: 29px; }
   .tc-dir svg { width: 32px; height: 32px; }
-  .tc span { font-size: 9px; }
 }
 
 @media (max-width: 340px) {
   .panel { padding: 20px 16px; gap: 11px; }
-  #touch-controls { --tc-dir: 58px; --tc-gas: 70px; --tc-aux: 55px; --tc-gap: 7px; padding: 0 8px; }
+  #touch-controls {
+    --tc-dir: 58px;
+    --tc-gas-w: 62px; --tc-gas-h: 80px;
+    --tc-brake-w: 64px; --tc-brake-h: 66px;
+    --tc-boost-w: 48px; --tc-boost-h: 70px;
+    padding: 0 8px;
+  }
   .tc-steer { gap: 7px; }
-  .tc svg { width: 25px; height: 25px; }
   .tc-dir svg { width: 28px; height: 28px; }
-  .tc span { font-size: 8px; letter-spacing: 0.6px; }
   .sb-value { font-size: 36px; }
 }
 
@@ -342,6 +337,11 @@ html, body {
   .btn { padding: 11px 16px; min-height: 42px; }
   .btn-primary { font-size: 17px; padding: 12px 16px; }
   .sb-value { font-size: 32px; }
-  #touch-controls { bottom: 10px; --tc-dir: 62px; --tc-gas: 72px; --tc-aux: 56px; --tc-gap: 8px; }
-  .tc span { font-size: 9px; }
+  #touch-controls {
+    bottom: 10px;
+    --tc-dir: 62px;
+    --tc-gas-w: 66px; --tc-gas-h: 84px;
+    --tc-brake-w: 68px; --tc-brake-h: 68px;
+    --tc-boost-w: 48px; --tc-boost-h: 74px;
+  }
 }

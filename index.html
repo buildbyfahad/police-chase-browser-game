@@ -87,31 +87,99 @@
         </div>
 
         <div class="tc-pedals">
+          <!-- No container boxes: the pedal itself is the control, so pressing
+               it should feel like pressing the real part. -->
+
           <button class="tc tc-boost" data-ctl="nitro" aria-label="Boost">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <!-- nitrous bottle: valve, neck, cylinder body -->
-              <path class="ic-line" d="M9.7 2.9h4.6M12 3.1v1.7"/>
-              <path class="ic-solid" d="M10.3 4.6h3.4v2.6h-3.4z"/>
-              <path class="ic-solid" d="M8 11.1a4 4 0 0 1 8 0v6.6a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3z"/>
-              <path class="ic-cut" d="M8.4 14.6h7.2"/>
+            <svg viewBox="0 0 56 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="nosBody" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#11427f"/>
+                  <stop offset="26%" stop-color="#7cc3ff"/>
+                  <stop offset="52%" stop-color="#2f7bff"/>
+                  <stop offset="100%" stop-color="#0d2f5e"/>
+                </linearGradient>
+                <linearGradient id="nosSteel" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#5b657e"/>
+                  <stop offset="35%" stop-color="#d7deec"/>
+                  <stop offset="70%" stop-color="#8b94aa"/>
+                  <stop offset="100%" stop-color="#495166"/>
+                </linearGradient>
+              </defs>
+              <ellipse class="pd-shadow" cx="28" cy="95" rx="20" ry="4"/>
+              <rect x="20" y="4" width="16" height="9" rx="3" fill="url(#nosSteel)"/>
+              <rect x="25" y="11" width="6" height="8" fill="url(#nosSteel)"/>
+              <rect x="21" y="17" width="14" height="7" rx="2.5" fill="url(#nosSteel)"/>
+              <rect x="8" y="22" width="40" height="70" rx="17" fill="url(#nosBody)"/>
+              <rect x="8" y="47" width="40" height="15" fill="#0b1f3d" opacity=".5"/>
+              <rect x="13" y="30" width="5" height="54" rx="2.5" fill="#ffffff" opacity=".3"/>
+              <rect x="8" y="22" width="40" height="70" rx="17" fill="none" stroke="#9ed4ff" stroke-width="1.6" opacity=".55"/>
             </svg>
-            <span>BOOST</span>
           </button>
+
           <button class="tc tc-brake" data-ctl="brake" aria-label="Brake">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <!-- brake pedal: wide rubber pad on a short arm -->
-              <path class="ic-pad" d="M4.3 6.1 18.4 8.8 17.6 13 3.5 10.3Z"/>
-              <path class="ic-line" d="M10.6 11.6v8.1M6.2 20.4h9"/>
+            <svg viewBox="0 0 84 96" aria-hidden="true">
+              <defs>
+                <linearGradient id="brkPad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ff7d94"/>
+                  <stop offset="45%" stop-color="#e02744"/>
+                  <stop offset="100%" stop-color="#7d0f20"/>
+                </linearGradient>
+                <linearGradient id="brkArm" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#525c73"/>
+                  <stop offset="40%" stop-color="#cfd7e6"/>
+                  <stop offset="100%" stop-color="#5a6379"/>
+                </linearGradient>
+              </defs>
+              <ellipse class="pd-shadow" cx="42" cy="91" rx="26" ry="4.5"/>
+              <rect x="35" y="40" width="14" height="46" rx="4" fill="url(#brkArm)"/>
+              <rect x="26" y="82" width="32" height="9" rx="4" fill="#394154" opacity=".85"/>
+              <g class="pd-pad">
+                <rect x="6" y="14" width="72" height="30" rx="9" fill="url(#brkPad)"/>
+                <rect x="6" y="14" width="72" height="30" rx="9" fill="none" stroke="#ffc2cd" stroke-width="2" opacity=".65"/>
+                <g fill="#5c0c18" opacity=".45">
+                  <rect x="17" y="20" width="5" height="18" rx="2.5"/>
+                  <rect x="29" y="20" width="5" height="18" rx="2.5"/>
+                  <rect x="41" y="20" width="5" height="18" rx="2.5"/>
+                  <rect x="53" y="20" width="5" height="18" rx="2.5"/>
+                  <rect x="65" y="20" width="5" height="18" rx="2.5"/>
+                </g>
+              </g>
             </svg>
-            <span>BRAKE</span>
           </button>
+
           <button class="tc tc-gas" data-ctl="accelerate" aria-label="Accelerate">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <!-- accelerator: long narrow treadle hinged at the floor -->
-              <path class="ic-pad" d="M13.6 3.2 17 4.7 10.1 18.9 6.7 17.4Z"/>
-              <path class="ic-line" d="M4.4 20.4h10.2"/>
+            <!-- viewBox is wider than the pedal so the 13deg lean has room and
+                 never clips against the screen edge -->
+            <svg viewBox="0 0 78 106" aria-hidden="true">
+              <defs>
+                <linearGradient id="gasPad" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#0f7a4c"/>
+                  <stop offset="30%" stop-color="#7dffc0"/>
+                  <stop offset="62%" stop-color="#22c37a"/>
+                  <stop offset="100%" stop-color="#0a5233"/>
+                </linearGradient>
+                <linearGradient id="gasArm" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#525c73"/>
+                  <stop offset="45%" stop-color="#cfd7e6"/>
+                  <stop offset="100%" stop-color="#5a6379"/>
+                </linearGradient>
+              </defs>
+              <ellipse class="pd-shadow" cx="35" cy="99" rx="23" ry="4.5"/>
+              <g class="pd-pad">
+                <rect x="22" y="10" width="27" height="83" rx="9" fill="url(#gasPad)"/>
+                <rect x="22" y="10" width="27" height="83" rx="9" fill="none" stroke="#bfffe2" stroke-width="2" opacity=".6"/>
+                <g fill="#06381f" opacity=".42">
+                  <rect x="27" y="20" width="17" height="4.6" rx="2.3"/>
+                  <rect x="27" y="32" width="17" height="4.6" rx="2.3"/>
+                  <rect x="27" y="44" width="17" height="4.6" rx="2.3"/>
+                  <rect x="27" y="56" width="17" height="4.6" rx="2.3"/>
+                  <rect x="27" y="68" width="17" height="4.6" rx="2.3"/>
+                </g>
+              </g>
+              <rect x="23" y="89" width="24" height="9" rx="4" fill="url(#gasArm)"/>
+              <circle cx="35" cy="93" r="3.4" fill="#394154"/>
             </svg>
-            <span>GAS</span>
           </button>
         </div>
       </div>

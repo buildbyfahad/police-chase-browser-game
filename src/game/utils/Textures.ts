@@ -86,6 +86,14 @@ export function createTextures(scene: Phaser.Scene): void {
 
 type VehicleStyle = 'car' | 'heavy' | 'police' | 'player';
 
+/**
+ * A modern car seen from above.
+ *
+ * The proportions matter more than the detail at this size: a real car reads
+ * as bonnet, a short glasshouse, then boot — roughly 30/40/30 — with the
+ * wheels proud of the bodywork and the hips wider than the nose. Draw it as
+ * one big rounded box with a big window and it reads as a van.
+ */
 function drawVehicle(
   g: Phaser.GameObjects.Graphics,
   key: string,
@@ -97,76 +105,115 @@ function drawVehicle(
   const s = TEX_SCALE;
   const W = w * s;
   const H = h * s;
-  const pad = 4 * s; // room for the drop shadow
+  const pad = 5 * s;
+  const heavy = style === 'heavy';
   g.clear();
 
-  // Drop shadow
-  g.fillStyle(0x000000, 0.32);
-  g.fillRoundedRect(pad * 0.6, pad * 1.2, W, H, 8 * s);
+  const X = (f: number) => W * f;
+  const Y = (f: number) => H * f;
 
-  // Wheels poke out from under the chassis
-  const wheelW = 5 * s;
-  const wheelH = H * 0.16;
-  g.fillStyle(0x0d0f16, 1);
-  for (const wy of [H * 0.17, H * 0.66]) {
-    g.fillRoundedRect(0, wy, wheelW + 2 * s, wheelH, 2 * s);
-    g.fillRoundedRect(W - wheelW - 2 * s, wy, wheelW + 2 * s, wheelH, 2 * s);
+  // --- Wheels, proud of the bodywork on each side ---
+  const wheel = (cxF: number, cyF: number) => {
+    const tw = X(0.13);
+    const th = Y(heavy ? 0.12 : 0.15);
+    const cx = X(cxF);
+    const cy = Y(cyF);
+    g.fillStyle(0x0a0c12, 1);
+    g.fillRoundedRect(cx - tw / 2, cy - th / 2, tw, th, 2.5 * s);
+    g.fillStyle(0x99a1b6, 1);
+    g.fillRoundedRect(cx - tw * 0.26, cy - th * 0.3, tw * 0.52, th * 0.6, 2 * s);
+
+  };
+  const axleF = heavy ? 0.17 : 0.24;
+  const axleR = heavy ? 0.83 : 0.78;
+  for (const cy of [axleF, axleR]) {
+    wheel(0.055, cy);
+    wheel(0.945, cy);
   }
 
-  // Chassis
-  const bx = wheelW * 0.5;
-  const bw = W - wheelW;
-  g.fillStyle(pal.bodyDark, 1);
-  g.fillRoundedRect(bx, 0, bw, H, 9 * s);
-  g.fillStyle(pal.body, 1);
-  g.fillRoundedRect(bx + 1.5 * s, 1.5 * s, bw - 3 * s, H - 3 * s, 8 * s);
+  // --- Body: tapered nose, wide hips ---
+  const outline: Array<[number, number]> = heavy
+    ? [[0.10, 0.01], [0.90, 0.01], [0.96, 0.05], [0.96, 0.95], [0.90, 0.99], [0.10, 0.99], [0.04, 0.95], [0.04, 0.05]]
+    : [[0.28, 0.01], [0.72, 0.01], [0.86, 0.08], [0.93, 0.28], [0.93, 0.74], [0.87, 0.94],
+       [0.72, 0.99], [0.28, 0.99], [0.13, 0.94], [0.07, 0.74], [0.07, 0.28], [0.14, 0.08]];
 
-  // Cabin block
-  const cabY = style === 'heavy' ? H * 0.06 : H * 0.24;
-  const cabH = style === 'heavy' ? H * 0.26 : H * 0.44;
-  g.fillStyle(pal.cabin, 1);
-  g.fillRoundedRect(bx + 4 * s, cabY, bw - 8 * s, cabH, 5 * s);
+  const poly = (shrink: number, colour: number) => {
+    g.fillStyle(colour, 1);
+    g.lineStyle(2.6 * s, colour, 1);
+    g.beginPath();
+    outline.forEach(([px, py], i) => {
+      const x = X(0.5) + (px - 0.5) * (W - shrink * 2);
+      const y = Y(0.5) + (py - 0.5) * (H - shrink * 2);
+      if (i === 0) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    });
+    g.closePath();
+    g.fillPath();
+    g.strokePath();
+  };
+  g.fillStyle(0x000000, 0.3);
+  poly(0, 0x05070d);
+  poly(1.6 * s, pal.bodyDark);
+  poly(3.4 * s, pal.body);
 
-  // Windscreen + rear glass
-  g.fillStyle(pal.glass, 0.92);
-  g.fillRoundedRect(bx + 6 * s, cabY + 2.5 * s, bw - 12 * s, cabH * 0.36, 3 * s);
-  g.fillStyle(pal.glass, 0.55);
-  g.fillRoundedRect(bx + 6 * s, cabY + cabH - cabH * 0.32, bw - 12 * s, cabH * 0.26, 3 * s);
-
-  if (style === 'heavy') {
-    // Cargo box ribs
-    g.fillStyle(pal.bodyDark, 0.55);
-    for (let i = 0; i < 5; i++) {
-      g.fillRect(bx + 5 * s, H * 0.42 + i * (H * 0.1), bw - 10 * s, 2 * s);
-    }
-  }
-
+  // Racing stripes sit under the glass, as they do on a real car
   if (style === 'player') {
-    // Racing stripes
     g.fillStyle(pal.accent!, 0.9);
-    g.fillRect(W * 0.5 - 5 * s, 3 * s, 3.5 * s, H - 6 * s);
-    g.fillRect(W * 0.5 + 1.5 * s, 3 * s, 3.5 * s, H - 6 * s);
+    g.fillRect(X(0.5) - 4.5 * s, Y(0.03), 3.2 * s, H * 0.94);
+    g.fillRect(X(0.5) + 1.3 * s, Y(0.03), 3.2 * s, H * 0.94);
+  }
+  if (style === 'police') {
+    g.fillStyle(pal.accent!, 1);
+    g.fillRect(X(0.08), Y(0.3), 5.5 * s, Y(0.4));
+    g.fillRect(X(0.92) - 5.5 * s, Y(0.3), 5.5 * s, Y(0.4));
+  }
+
+  // Shoulder crease down each flank
+  g.fillStyle(0xffffff, 0.14);
+  g.fillRoundedRect(X(0.1), Y(0.22), X(0.05), Y(0.56), 2.5 * s);
+  g.fillRoundedRect(X(0.85), Y(0.22), X(0.05), Y(0.56), 2.5 * s);
+
+  // --- Glasshouse: short, inset, with a bonnet and boot either side ---
+  const winTop = heavy ? 0.07 : 0.29;
+  const winBot = heavy ? 0.33 : 0.69;
+  g.fillStyle(0x090c14, 0.9);
+  g.fillRoundedRect(X(0.18), Y(winTop), X(0.64), Y(winBot - winTop), 5 * s);
+
+  const glassH = (winBot - winTop) * 0.4;
+  g.fillStyle(pal.glass, 0.95);
+  g.fillRoundedRect(X(0.21), Y(winTop + 0.015), X(0.58), Y(glassH), 4 * s);
+  g.fillStyle(0xffffff, 0.22);
+  g.fillRoundedRect(X(0.21), Y(winTop + 0.015), X(0.26), Y(glassH), 4 * s);
+  g.fillStyle(pal.glass, 0.55);
+  g.fillRoundedRect(X(0.23), Y(winBot - glassH * 0.85), X(0.54), Y(glassH * 0.72), 4 * s);
+
+  if (heavy) {
+    g.fillStyle(pal.bodyDark, 0.45);
+    for (let i = 0; i < 5; i++) g.fillRect(X(0.1), Y(0.44 + i * 0.1), X(0.8), 2 * s);
   }
 
   if (style === 'police') {
-    // Chequer band down each flank
-    g.fillStyle(pal.accent!, 1);
-    g.fillRect(bx + 2 * s, H * 0.3, 6 * s, H * 0.4);
-    g.fillRect(bx + bw - 8 * s, H * 0.3, 6 * s, H * 0.4);
-    // Roof light bar housing (the flashing colours are separate sprites)
     g.fillStyle(0x151b2c, 1);
-    g.fillRoundedRect(bx + 6 * s, cabY + cabH * 0.42, bw - 12 * s, 7 * s, 2 * s);
+    g.fillRoundedRect(X(0.24), Y(winTop + glassH + 0.03), X(0.52), 6.5 * s, 2 * s);
   }
 
-  // Head- and tail-lights
-  g.fillStyle(0xfff6d8, 1);
-  g.fillRoundedRect(bx + 4 * s, 2 * s, 8 * s, 4 * s, 2 * s);
-  g.fillRoundedRect(bx + bw - 12 * s, 2 * s, 8 * s, 4 * s, 2 * s);
-  g.fillStyle(0xff3b3b, 1);
-  g.fillRoundedRect(bx + 4 * s, H - 6 * s, 8 * s, 4 * s, 2 * s);
-  g.fillRoundedRect(bx + bw - 12 * s, H - 6 * s, 8 * s, 4 * s, 2 * s);
+  // Door mirrors, just behind the A-pillar
+  g.fillStyle(pal.bodyDark, 1);
+  g.fillRoundedRect(X(0.02), Y(winTop + 0.01), X(0.09), 4.5 * s, 2 * s);
+  g.fillRoundedRect(X(0.89), Y(winTop + 0.01), X(0.09), 4.5 * s, 2 * s);
 
-  g.generateTexture(key, W + pad, H + pad * 1.4);
+  // --- Lighting ---
+  g.fillStyle(0xe8f4ff, 1);
+  g.fillRoundedRect(X(0.18), Y(0.02), X(0.22), 3.2 * s, 1.6 * s);
+  g.fillRoundedRect(X(0.60), Y(0.02), X(0.22), 3.2 * s, 1.6 * s);
+
+  g.fillStyle(0x6d0b13, 1);
+  g.fillRoundedRect(X(0.15), H - 6.5 * s, X(0.70), 4 * s, 2 * s);
+  g.fillStyle(0xff3b3b, 1);
+  g.fillRoundedRect(X(0.17), H - 6 * s, X(0.66), 2.6 * s, 1.3 * s);
+
+  g.lineStyle(0, 0, 0);
+  g.generateTexture(key, W + pad, H + pad);
 }
 
 /* ------------------------------------------------------------------ */

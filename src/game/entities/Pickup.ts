@@ -1,6 +1,6 @@
 /** A pooled collectible — a coin or one of the three power-ups. */
 import Phaser from 'phaser';
-import { COIN_SIZE, POWERUP_SIZE } from '../config/GameConfig';
+import { COIN_SIZE, POWERUP_SIZE, ROAD_CENTER } from '../config/GameConfig';
 
 export type PickupKind = 'coin' | 'nitro' | 'shield' | 'magnet';
 
@@ -14,6 +14,9 @@ const TEXTURES: Record<PickupKind, string> = {
 export class Pickup extends Phaser.GameObjects.Image {
   kind: PickupKind = 'coin';
   radius = COIN_SIZE / 2;
+  /** Offset from the road centreline; magnet pull nudges this rather than x
+   *  directly, so an attracted coin still travels with the bend. */
+  localX = 0;
   /** Phase offset so a row of coins shimmers in a wave rather than in sync. */
   private phase = 0;
 
@@ -24,14 +27,15 @@ export class Pickup extends Phaser.GameObjects.Image {
     scene.add.existing(this);
   }
 
-  spawn(kind: PickupKind, x: number, y: number): void {
+  spawn(kind: PickupKind, localX: number, y: number): void {
     this.kind = kind;
     this.setTexture(TEXTURES[kind]);
     const size = kind === 'coin' ? COIN_SIZE : POWERUP_SIZE;
     this.setDisplaySize(size, size);
     this.radius = size / 2;
     this.phase = Math.random() * Math.PI * 2;
-    this.setPosition(x, y);
+    this.localX = localX;
+    this.setPosition(ROAD_CENTER + localX, y);
     this.setAlpha(1).setScale(this.scaleX, this.scaleY);
     this.setActive(true).setVisible(true);
   }
@@ -40,8 +44,9 @@ export class Pickup extends Phaser.GameObjects.Image {
     this.setActive(false).setVisible(false);
   }
 
-  update(scrollSpeed: number, dt: number, time: number): void {
+  update(scrollSpeed: number, dt: number, time: number, offsetAt: (y: number) => number): void {
     this.y += scrollSpeed * dt;
+    this.x = ROAD_CENTER + offsetAt(this.y) + this.localX;
     if (this.kind === 'coin') {
       // Squash the x axis to fake a spinning coin
       const spin = Math.abs(Math.cos(time * 0.004 + this.phase));
@@ -58,6 +63,7 @@ export class Pickup extends Phaser.GameObjects.Image {
     const dy = y - this.y;
     const dist = Math.hypot(dx, dy) || 1;
     const step = Math.min(dist, pull * dt);
+    this.localX += (dx / dist) * step;
     this.x += (dx / dist) * step;
     this.y += (dy / dist) * step;
   }

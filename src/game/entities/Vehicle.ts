@@ -6,7 +6,7 @@
  * whole session. That is what keeps long runs allocation-free.
  */
 import Phaser from 'phaser';
-import type { TrafficKind } from '../config/GameConfig';
+import { ROAD_CENTER, type TrafficKind } from '../config/GameConfig';
 
 export type ObstacleKind = 'cone' | 'oil';
 
@@ -17,6 +17,9 @@ export class Vehicle extends Phaser.GameObjects.Image {
   hitW = 40;
   hitH = 80;
   lane = 0;
+  /** Position relative to the road centreline, so it stays on the tarmac
+   *  however far the road has bent by the time it reaches the player. */
+  localX = 0;
   /** Set once the player has drawn level, so a near miss only scores once. */
   scoredNearMiss = false;
   /** Obstacles are static hazards rather than moving traffic. */
@@ -29,17 +32,17 @@ export class Vehicle extends Phaser.GameObjects.Image {
     scene.add.existing(this);
   }
 
-  spawnTraffic(kind: TrafficKind, x: number, y: number, lane: number, speedFactor: number): void {
+  spawnTraffic(kind: TrafficKind, localX: number, y: number, lane: number, speedFactor: number): void {
     this.setTexture(`tex-${kind.key}`);
     this.setDisplaySize(kind.width * 1.12, kind.height * 1.1);
     this.hitW = kind.width * 0.86;
     this.hitH = kind.height * 0.9;
     this.isObstacle = false;
     this.speedFactor = speedFactor;
-    this.reset(x, y, lane);
+    this.reset(localX, y, lane);
   }
 
-  spawnObstacle(kind: ObstacleKind, x: number, y: number, lane: number): void {
+  spawnObstacle(kind: ObstacleKind, localX: number, y: number, lane: number): void {
     if (kind === 'cone') {
       this.setTexture('tex-cone');
       this.setDisplaySize(30, 30);
@@ -53,13 +56,14 @@ export class Vehicle extends Phaser.GameObjects.Image {
     }
     this.isObstacle = true;
     this.speedFactor = 0;
-    this.reset(x, y, lane);
+    this.reset(localX, y, lane);
   }
 
-  private reset(x: number, y: number, lane: number): void {
+  private reset(localX: number, y: number, lane: number): void {
     this.lane = lane;
+    this.localX = localX;
     this.scoredNearMiss = false;
-    this.setPosition(x, y);
+    this.setPosition(ROAD_CENTER + localX, y);
     this.setAngle(0);
     this.setAlpha(1);
     this.setActive(true).setVisible(true);
@@ -73,7 +77,8 @@ export class Vehicle extends Phaser.GameObjects.Image {
    * `closingSpeed` is how fast the world is moving past this vehicle, i.e.
    * playerSpeed - ownSpeed. Positive means the player is gaining on it.
    */
-  advance(closingSpeed: number, dt: number): void {
+  advance(closingSpeed: number, dt: number, offsetAt: (y: number) => number): void {
     this.y += closingSpeed * dt;
+    this.x = ROAD_CENTER + offsetAt(this.y) + this.localX;
   }
 }

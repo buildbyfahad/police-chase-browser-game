@@ -42,6 +42,10 @@ export class GameManager {
       audio: { noAudio: true }, // audio is synthesised by our own AudioManager
     });
 
+    if (import.meta.env.DEV) {
+      (window as unknown as Record<string, unknown>).__PHASER_GAME__ = this.game;
+    }
+
     UI.init({
       onPlay: () => this.startGame(),
       onGarage: () => UI.setState('GARAGE'),

@@ -11,6 +11,7 @@ import type { PoliceManager } from '../systems/PoliceManager';
 import type { ScoreManager } from '../systems/ScoreManager';
 import type { TrafficManager } from '../systems/TrafficManager';
 import type { DifficultyManager } from '../systems/DifficultyManager';
+import type { RoadManager } from '../systems/RoadManager';
 
 export interface DebugSource {
   running: boolean;
@@ -20,13 +21,16 @@ export interface DebugSource {
   pickups: PickupManager;
   score: ScoreManager;
   difficulty: DifficultyManager;
+  road: RoadManager;
 }
 
 export function attachDebugBridge(read: () => DebugSource): void {
   (window as unknown as Record<string, unknown>).__policeChase = () => {
     const s = read();
-    const traffic: Array<{ x: number; y: number; w: number; h: number }> = [];
-    s.traffic.forEachActive((v) => traffic.push({ x: v.x, y: v.y, w: v.hitW, h: v.hitH }));
+    // localX is the honest coordinate on a bending road: screen x changes as a
+    // car travels down the curve, its position across the lanes does not.
+    const traffic: Array<{ x: number; y: number; localX: number; w: number; h: number }> = [];
+    s.traffic.forEachActive((v) => traffic.push({ x: v.x, y: v.y, localX: v.localX, w: v.hitW, h: v.hitH }));
     const police: Array<{ x: number; y: number }> = [];
     s.police.forEachActive((p) => police.push({ x: p.x, y: p.y }));
     const pickups: Array<{ x: number; y: number; kind: string }> = [];
@@ -36,6 +40,7 @@ export function attachDebugBridge(read: () => DebugSource): void {
       running: s.running,
       player: {
         x: s.player.x,
+        localX: s.player.x - (s.road.offset + 240),
         y: s.player.y,
         speed: s.player.speed,
         nitro: s.player.nitroFuel,
@@ -44,6 +49,8 @@ export function attachDebugBridge(read: () => DebugSource): void {
       magnet: s.player.magnetActive,
       stats: s.score.value,
       level: s.difficulty.value.level,
+      // Lateral offset of the road at the player, and one screen ahead
+      road: { offset: s.road.offset, ahead: s.road.offsetAt(s.player.y - 400) },
       traffic,
       police,
       pickups,

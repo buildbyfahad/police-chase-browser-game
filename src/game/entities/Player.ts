@@ -5,6 +5,7 @@
  */
 import Phaser from 'phaser';
 import {
+  CURVE_DRIFT,
   MAGNET_DURATION,
   NITRO_DRAIN,
   NITRO_MAX,
@@ -18,12 +19,12 @@ import {
   PLAYER_BRAKE,
   PLAYER_COAST,
   PLAYER_MAX_SPEED,
-  PLAYER_MAX_X,
+  PLAYER_LIMIT_X,
   PLAYER_MIN_SPEED,
-  PLAYER_MIN_X,
   PLAYER_STEER_ACCEL,
   PLAYER_STEER_SPEED,
   PLAYER_Y,
+  ROAD_CENTER,
   SHIELD_DURATION,
 } from '../config/GameConfig';
 import type { InputState } from '../systems/InputManager';
@@ -58,7 +59,7 @@ export class Player extends Phaser.GameObjects.Container {
   private stats: ResolvedStats = Garage.activeStats();
 
   constructor(scene: Phaser.Scene) {
-    super(scene, (PLAYER_MIN_X + PLAYER_MAX_X) / 2, PLAYER_Y);
+    super(scene, ROAD_CENTER, PLAYER_Y);
 
     this.flame = scene.add.image(0, 62, 'tex-glow-blue').setDisplaySize(52, 104).setAlpha(0);
     this.chassis = scene.add.image(0, 0, `tex-car-${Garage.selectedId()}`).setDisplaySize(52, 96);
@@ -74,7 +75,7 @@ export class Player extends Phaser.GameObjects.Container {
     // Picked up fresh each run, so a garage visit takes effect immediately
     this.stats = Garage.activeStats();
     this.chassis.setTexture(`tex-car-${Garage.selectedId()}`);
-    this.setPosition((PLAYER_MIN_X + PLAYER_MAX_X) / 2, PLAYER_Y);
+    this.setPosition(ROAD_CENTER, PLAYER_Y);
     this.speed = PLAYER_BASE_SPEED;
     this.speedBonus = 0;
     this.nitroFuel = NITRO_START * this.stats.nitro;
@@ -108,12 +109,12 @@ export class Player extends Phaser.GameObjects.Container {
     return NITRO_MAX * this.stats.nitro;
   }
 
-  update(dt: number, input: InputState, now: number): void {
+  update(dt: number, input: InputState, now: number, curve: { offset: number; rate: number }): void {
     if (this.crashed) return;
 
     this.updateNitro(dt, input);
     this.updateSpeed(dt, input);
-    this.updateSteering(dt, input);
+    this.updateSteering(dt, input, curve);
     this.updatePowerUps(now);
   }
 
@@ -168,7 +169,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.speed = Math.max(PLAYER_MIN_SPEED, this.speed);
   }
 
-  private updateSteering(dt: number, input: InputState): void {
+  private updateSteering(dt: number, input: InputState, curve: { offset: number; rate: number }): void {
     const dir = (input.left ? -1 : 0) + (input.right ? 1 : 0);
     // Steering grip falls off a little at very high speed
     const grip = 1 - Math.min(0.25, (this.speed - PLAYER_BASE_SPEED) / 2600);
@@ -176,9 +177,16 @@ export class Player extends Phaser.GameObjects.Container {
     const step = PLAYER_STEER_ACCEL * this.stats.handling * dt;
     this.steerVel += Phaser.Math.Clamp(target - this.steerVel, -step, step);
 
-    this.x = Phaser.Math.Clamp(this.x + this.steerVel * dt, PLAYER_MIN_X, PLAYER_MAX_X);
+    // A bend carries the car with it, then throws it toward the outside of
+    // the corner — holding a line through a sweeper takes a correction.
+    const carried = curve.rate * dt;
+    const thrown = -curve.rate * CURVE_DRIFT * dt;
+    const minX = ROAD_CENTER + curve.offset - PLAYER_LIMIT_X;
+    const maxX = ROAD_CENTER + curve.offset + PLAYER_LIMIT_X;
+
+    this.x = Phaser.Math.Clamp(this.x + this.steerVel * dt + carried + thrown, minX, maxX);
     // Scrubbing a barrier kills sideways momentum rather than sticking
-    if (this.x <= PLAYER_MIN_X || this.x >= PLAYER_MAX_X) this.steerVel = 0;
+    if (this.x <= minX || this.x >= maxX) this.steerVel = 0;
 
     this.chassis.setAngle((this.steerVel / (PLAYER_STEER_SPEED * this.stats.handling)) * 9);
   }

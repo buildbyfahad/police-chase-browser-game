@@ -13,7 +13,7 @@ import {
   PLAYER_BASE_SPEED,
   POOL_TRAFFIC,
   TRAFFIC_KINDS,
-  laneX,
+  laneLocalX,
   type TrafficKind,
 } from '../config/GameConfig';
 import type { DifficultySnapshot } from './DifficultyManager';
@@ -45,11 +45,11 @@ export class TrafficManager {
   }
 
   /** @param playerSpeed world scroll speed in px/s */
-  update(dt: number, playerSpeed: number, diff: DifficultySnapshot): void {
+  update(dt: number, playerSpeed: number, diff: DifficultySnapshot, offsetAt: (y: number) => number): void {
     for (const v of this.pool) {
       if (!v.active) continue;
       const ownSpeed = v.isObstacle ? 0 : v.speedFactor * PLAYER_BASE_SPEED * diff.trafficSpeedScale;
-      v.advance(playerSpeed - ownSpeed, dt);
+      v.advance(playerSpeed - ownSpeed, dt, offsetAt);
       if (v.y > DESPAWN_BELOW || v.y < DESPAWN_ABOVE) v.despawn();
     }
 
@@ -69,13 +69,13 @@ export class TrafficManager {
 
     if (Math.random() < diff.obstacleChance) {
       const kind = Math.random() < 0.6 ? 'cone' : 'oil';
-      v.spawnObstacle(kind, laneX(lane) + Phaser.Math.FloatBetween(-16, 16), SPAWN_Y, lane);
+      v.spawnObstacle(kind, laneLocalX(lane) + Phaser.Math.FloatBetween(-16, 16), SPAWN_Y, lane);
       return;
     }
 
     const kind = this.pickKind();
     const factor = Phaser.Math.FloatBetween(kind.speedMin, kind.speedMax);
-    v.spawnTraffic(kind, laneX(lane), SPAWN_Y, lane, factor);
+    v.spawnTraffic(kind, laneLocalX(lane), SPAWN_Y, lane, factor);
   }
 
   /**
@@ -127,10 +127,10 @@ export class TrafficManager {
   }
 
   /** True when the given rect is clear of traffic — used before dropping pickups. */
-  isClear(x: number, y: number, w: number, h: number): boolean {
+  isClear(localX: number, y: number, w: number, h: number): boolean {
     for (const v of this.pool) {
       if (!v.active) continue;
-      if (Math.abs(v.x - x) < (v.hitW + w) / 2 && Math.abs(v.y - y) < (v.hitH + h) / 2 + 30) {
+      if (Math.abs(v.localX - localX) < (v.hitW + w) / 2 && Math.abs(v.y - y) < (v.hitH + h) / 2 + 30) {
         return false;
       }
     }

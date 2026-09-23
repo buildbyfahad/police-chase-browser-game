@@ -14,7 +14,7 @@ import {
   POOL_COINS,
   POOL_POWERUPS,
   POWERUP_SIZE,
-  laneX,
+  laneLocalX,
 } from '../config/GameConfig';
 import { Pickup, type PickupKind } from '../entities/Pickup';
 import type { TrafficManager } from './TrafficManager';
@@ -60,13 +60,13 @@ export class PickupManager {
     this.powerTimer = 6;
   }
 
-  update(dt: number, playerSpeed: number, time: number, player: Player): void {
+  update(dt: number, playerSpeed: number, time: number, player: Player, offsetAt: (y: number) => number): void {
     const magnetOn = player.magnetActive;
 
     for (const list of [this.coins, this.powerUps]) {
       for (const p of list) {
         if (!p.active) continue;
-        p.update(playerSpeed, dt, time);
+        p.update(playerSpeed, dt, time, offsetAt);
 
         if (magnetOn && p.kind === 'coin') {
           const dist = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);
@@ -102,13 +102,13 @@ export class PickupManager {
       if (pattern === 1) lane = Phaser.Math.Clamp(startLane + Math.round(i / 2), 0, LANE_COUNT - 1);
       else if (pattern === 2) lane = Phaser.Math.Clamp(startLane + (i % 2), 0, LANE_COUNT - 1);
 
-      const x = laneX(lane);
+      const localX = laneLocalX(lane);
       const y = SPAWN_Y - i * COIN_GAP;
-      if (!this.traffic.isClear(x, y, COIN_SIZE, COIN_SIZE)) continue;
+      if (!this.traffic.isClear(localX, y, COIN_SIZE, COIN_SIZE)) continue;
 
       const free = this.coins.find((c) => !c.active);
       if (!free) return;
-      free.spawn('coin', x, y);
+      free.spawn('coin', localX, y);
     }
   }
 
@@ -117,12 +117,12 @@ export class PickupManager {
     if (!free) return;
 
     const lane = Phaser.Math.Between(0, LANE_COUNT - 1);
-    const x = laneX(lane);
-    if (!this.traffic.isClear(x, SPAWN_Y, POWERUP_SIZE, POWERUP_SIZE)) {
+    const localX = laneLocalX(lane);
+    if (!this.traffic.isClear(localX, SPAWN_Y, POWERUP_SIZE, POWERUP_SIZE)) {
       this.powerTimer = 1.2; // road was busy — try again shortly
       return;
     }
-    free.spawn(this.pickPowerUpKind(), x, SPAWN_Y);
+    free.spawn(this.pickPowerUpKind(), localX, SPAWN_Y);
   }
 
   private pickPowerUpKind(): PickupKind {

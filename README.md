@@ -41,7 +41,7 @@ No install. No account. No downloads. Just hit **PLAY**.
 <td align="center" width="33%">
   <img src="docs/screenshots/gameplay.png" width="240" alt="Driving through traffic"><br>
   <b>The highway</b><br>
-  <sub>Four lanes, endless city, coin trails</sub>
+  <sub>Four lanes that bend, endless city, coin trails</sub>
 </td>
 <td align="center" width="33%">
   <img src="docs/screenshots/chase.png" width="240" alt="Police car on the player's bumper"><br>
@@ -141,6 +141,7 @@ press that does nothing.
 | 🟢 **Shield** | Absorbs one otherwise-fatal collision. Blinks out over its last 1.5 seconds. |
 | 🟣 **Coin magnet** | Hoovers up every coin within 210px for 7 seconds. |
 | 🛢️ **Hazards** | Oil slicks spin you out and cost you speed. Cones and traffic end the run. |
+| 🛣️ **Bends** | The road sweeps left and right as you travel. Lanes, traffic, coins and police all sit on the curve, and a corner carries the car toward its outside — holding a line through a sweeper takes a correction. |
 | 📈 **Difficulty** | Seven tiers from **EASY** to **INSANE**, driven by survival time and interpolated continuously — the road tightens, it never lurches. |
 
 **Score** = distance + survival time + coins + police escaped + near-miss bonuses.

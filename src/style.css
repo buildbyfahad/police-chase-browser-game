@@ -30,7 +30,16 @@ html, body {
   -webkit-user-select: none;
 }
 
-#app { position: fixed; inset: 0; }
+#app {
+  position: fixed;
+  inset: 0;
+  /* On wide screens the portrait canvas is letterboxed. Give the bars an
+     ambient wash so the surround reads as staging rather than dead space. */
+  background:
+    radial-gradient(120% 70% at 50% -10%, rgba(47, 123, 255, 0.16), transparent 58%),
+    radial-gradient(110% 60% at 50% 110%, rgba(255, 59, 92, 0.14), transparent 58%),
+    #05060d;
+}
 
 #game-root { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 #game-root canvas { display: block; touch-action: none; }
@@ -492,4 +501,177 @@ html, body {
   .car-name { font-size: 11px; }
   .car-tag { font-size: 8px; }
   .up-buy { min-width: 66px; padding: 7px 9px; font-size: 11px; }
+}
+
+
+/* ============ Landing hero ============
+   The menu sits over the live attract scene, so everything here is built to
+   stay readable against moving gameplay: a scrim, generous weight on the
+   type, and no large opaque slab hiding the road. */
+
+.overlay-hero {
+  background:
+    radial-gradient(130% 70% at 50% 0%, rgba(47, 123, 255, 0.22), transparent 62%),
+    radial-gradient(120% 60% at 50% 104%, rgba(255, 59, 92, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(4, 6, 14, 0.62) 0%, rgba(4, 6, 14, 0.26) 42%, rgba(4, 6, 14, 0.8) 100%);
+  backdrop-filter: none;
+  align-items: center;
+}
+
+.hero {
+  width: min(430px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+  padding: 8px 4px;
+  scrollbar-width: none;
+}
+.hero::-webkit-scrollbar { display: none; }
+.hero > * { animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hero > *:nth-child(1) { animation-delay: 0.02s; }
+.hero > *:nth-child(2) { animation-delay: 0.07s; }
+.hero > *:nth-child(3) { animation-delay: 0.12s; }
+.hero > *:nth-child(4) { animation-delay: 0.17s; }
+.hero > *:nth-child(5) { animation-delay: 0.22s; }
+.hero > *:nth-child(6) { animation-delay: 0.27s; }
+.hero > *:nth-child(7) { animation-delay: 0.32s; }
+.hero > *:nth-child(8) { animation-delay: 0.37s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+/* --- Badge --- */
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 14, 30, 0.6);
+  backdrop-filter: blur(10px);
+  font-size: 10px; font-weight: 800; letter-spacing: 2.4px; color: #b9c3e6;
+}
+.hero-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #ff3b5c;
+  box-shadow: 0 0 10px #ff3b5c;
+  animation: siren 1.1s ease-in-out infinite;
+}
+@keyframes siren { 50% { background: #3b7bff; box-shadow: 0 0 10px #3b7bff; } }
+
+/* --- Title --- */
+.hero-title {
+  margin: 0;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.75);
+  display: flex; flex-direction: column;
+  font-weight: 900; line-height: 0.86; letter-spacing: 2px;
+  font-size: clamp(50px, 16vw, 76px);
+}
+.ht-1 {
+  background: linear-gradient(180deg, #ffffff 20%, #b9c9f5 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ht-2 {
+  background: linear-gradient(180deg, #ffd24a 8%, #ff8a1f 52%, #ff3b5c 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(255, 122, 24, 0.5));
+}
+.hero-tagline {
+  margin: -2px 0 0;
+  /* Kept to one line — the wrap put "CAUGHT." on its own row and broke the
+     rhythm between the title and the stats. */
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2.4px; color: #a8b3dd;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* --- Stats --- */
+.hero-stats {
+  display: flex; align-items: stretch; gap: 14px;
+  padding: 11px 20px; border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 12, 26, 0.68);
+  backdrop-filter: blur(14px);
+}
+.hstat { display: flex; flex-direction: column; gap: 3px; min-width: 86px; }
+.hstat-label { font-size: 9px; letter-spacing: 2px; color: #7b86ae; font-weight: 700; }
+.hstat-value { font-size: 23px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.hstat-value.coins { color: var(--accent); }
+.hstat-divider { width: 1px; background: rgba(255, 255, 255, 0.12); }
+
+/* --- Primary call to action --- */
+.cta {
+  position: relative;
+  appearance: none; border: 0; cursor: pointer;
+  width: 100%; max-width: 300px;
+  padding: 19px 24px; border-radius: 18px;
+  font: inherit; font-size: 23px; font-weight: 900; letter-spacing: 6px;
+  color: #1c1000;
+  background: linear-gradient(180deg, #ffd875 0%, #ffb02e 45%, #ff7a18 100%);
+  box-shadow: 0 14px 38px rgba(255, 122, 24, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.18s ease;
+}
+.cta-label { position: relative; z-index: 1; }
+.cta-glow {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.6) 50%, transparent 62%);
+  transform: translateX(-120%);
+  animation: sheen 3.6s ease-in-out infinite;
+}
+@keyframes sheen { 0%, 62% { transform: translateX(-120%); } 82%, 100% { transform: translateX(120%); } }
+.cta:active { transform: scale(0.975); }
+@media (hover: hover) { .cta:hover { box-shadow: 0 18px 46px rgba(255, 122, 24, 0.55); } }
+
+/* --- Secondary --- */
+.btn-secondary {
+  appearance: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; max-width: 300px;
+  padding: 13px 20px; border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 14, 30, 0.6);
+  backdrop-filter: blur(10px);
+  font: inherit; font-size: 13px; font-weight: 800; letter-spacing: 2.5px;
+  color: var(--ink);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.btn-secondary svg { width: 19px; height: 19px; fill: currentColor; }
+.btn-secondary:active { transform: scale(0.97); }
+@media (hover: hover) { .btn-secondary:hover { background: rgba(30, 40, 74, 0.75); } }
+
+/* --- Toggles --- */
+.hero-toggles { display: flex; gap: 8px; width: 100%; max-width: 300px; }
+.chip {
+  flex: 1;
+  appearance: none; cursor: pointer;
+  padding: 10px 8px; border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 30, 0.5);
+  backdrop-filter: blur(10px);
+  font: inherit; font-size: 10px; font-weight: 800; letter-spacing: 1.4px;
+  color: #a4aed4;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.chip:active { transform: scale(0.97); }
+@media (hover: hover) { .chip:hover { background: rgba(30, 40, 74, 0.7); color: var(--ink); } }
+
+.hero-hint {
+  margin: 2px 0 0;
+  font-size: 10.5px; line-height: 1.85; color: #7983a9; letter-spacing: 0.3px;
+}
+.hero-hint b { color: #b9c3e6; font-size: 9.5px; letter-spacing: 2px; margin-right: 5px; }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .hero { width: min(560px, 100%); gap: 9px; }
+  .hero-title { font-size: 44px; flex-direction: row; gap: 14px; }
+  .hero-hint, .hero-badge { display: none; }
+  .cta { padding: 13px 20px; font-size: 19px; }
+  .btn-secondary { padding: 10px 16px; }
+}
+
+@media (max-height: 640px) and (orientation: portrait) {
+  .hero { gap: 11px; }
+  .hero-title { font-size: clamp(42px, 13vw, 58px); }
+  .hero-hint { display: none; }
 }

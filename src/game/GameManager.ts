@@ -7,6 +7,7 @@
  */
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from './config/GameConfig';
+import { AttractScene } from './scenes/AttractScene';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 import { HudScene } from './scenes/HudScene';
@@ -38,7 +39,7 @@ export class GameManager {
         roundPixels: false,
       },
       // The game is entirely tween/manager driven; no physics engine needed.
-      scene: [BootScene, GameScene, HudScene],
+      scene: [BootScene, AttractScene, GameScene, HudScene],
       audio: { noAudio: true }, // audio is synthesised by our own AudioManager
     });
 
@@ -59,6 +60,7 @@ export class GameManager {
     Input.setPauseHandler(() => this.togglePause());
 
     Bus.on(EVENT.READY, () => {
+      this.showAttract();
       UI.setState('MENU');
       UI.refreshMenuStats();
     });
@@ -77,12 +79,18 @@ export class GameManager {
 
   /* ---------------- transitions ---------------- */
 
+  /** Runs the game itself behind the menu, as a live backdrop. */
+  private showAttract(): void {
+    if (!this.game.scene.isActive('attract')) this.game.scene.start('attract');
+  }
+
   private startGame(): void {
     Audio.unlock();
     Audio.setSuspended(false);
     Audio.stopAll();
     Input.releaseAll();
 
+    this.game.scene.stop('attract');
     this.game.scene.stop('hud');
     this.game.scene.stop('game');
     this.game.scene.start('game');
@@ -118,6 +126,7 @@ export class GameManager {
     Input.releaseAll();
     this.game.scene.stop('hud');
     this.game.scene.stop('game');
+    this.showAttract();
     UI.setState('MENU');
     UI.refreshMenuStats();
   }

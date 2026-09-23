@@ -12,32 +12,54 @@
     <div id="app">
       <div id="game-root"></div>
 
-      <!-- ===== Landing / menu ===== -->
-      <section id="screen-menu" class="overlay">
-        <div class="panel">
-          <div class="logo">
-            <h1 class="title">POLICE<span>CHASE</span></h1>
-            <p class="tagline">Escape. Survive. Don't Get Caught.</p>
+      <!-- ===== Landing / menu =====
+           Sits over the game actually running (the "attract" scene), so the
+           backdrop is live gameplay rather than a canned trailer. -->
+      <section id="screen-menu" class="overlay overlay-hero">
+        <div class="hero">
+          <div class="hero-badge">
+            <span class="hero-dot"></span>
+            ENDLESS HIGHWAY ESCAPE
           </div>
 
-          <button id="btn-play" class="btn btn-primary">PLAY</button>
+          <h1 class="hero-title">
+            <span class="ht-1">POLICE</span>
+            <span class="ht-2">CHASE</span>
+          </h1>
+          <p class="hero-tagline">Escape. Survive. Don't Get Caught.</p>
 
-          <div class="stats-row">
-            <div class="stat"><span class="stat-label">BEST SCORE</span><span class="stat-value" id="menu-best">0</span></div>
-            <div class="stat"><span class="stat-label">TOTAL COINS</span><span class="stat-value" id="menu-coins">0</span></div>
+          <div class="hero-stats">
+            <div class="hstat">
+              <span class="hstat-label">BEST SCORE</span>
+              <span class="hstat-value" id="menu-best">0</span>
+            </div>
+            <div class="hstat-divider"></div>
+            <div class="hstat">
+              <span class="hstat-label">COINS</span>
+              <span class="hstat-value coins" id="menu-coins">0</span>
+            </div>
           </div>
 
-          <button id="btn-garage" class="btn">🔧 GARAGE</button>
+          <button id="btn-play" class="cta">
+            <span class="cta-label">PLAY</span>
+            <span class="cta-glow"></span>
+          </button>
 
-          <div class="settings-row">
-            <button id="btn-sound" class="btn btn-ghost" aria-pressed="true">SOUND: ON</button>
-            <button id="btn-side" class="btn btn-ghost">PEDALS: RIGHT</button>
+          <button id="btn-garage" class="btn-secondary">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 5 5h14l2 5.5V19h-3v-2H7v2H4z"/><circle cx="7.5" cy="14" r="1.2"/><circle cx="16.5" cy="14" r="1.2"/></svg>
+            GARAGE
+          </button>
+
+          <div class="hero-toggles">
+            <button id="btn-sound" class="chip" aria-pressed="true">SOUND: ON</button>
+            <button id="btn-side" class="chip">PEDALS: RIGHT</button>
           </div>
 
-          <div class="controls-help">
-            <div class="ch-row"><b>Desktop</b><span>A/D or ←/→ steer · W/S throttle · SPACE nitro · ESC pause</span></div>
-            <div class="ch-row"><b>Mobile</b><span>Steer with LEFT / RIGHT · GAS, BRAKE &amp; BOOST under your other thumb</span></div>
-          </div>
+          <p class="hero-hint">
+            <b>Desktop</b> A/D steer &middot; W/S throttle &middot; SPACE nitro &middot; ESC pause
+            <br>
+            <b>Mobile</b> steer one thumb, gas/brake/boost the other
+          </p>
         </div>
       </section>
 

@@ -36,7 +36,7 @@ No install. No account. No downloads. Just hit **PLAY**.
 <td align="center" width="33%">
   <img src="docs/screenshots/menu.png" width="240" alt="Landing screen"><br>
   <b>Landing screen</b><br>
-  <sub>Best score, coins, sound and pedal-side toggles</sub>
+  <sub>Live gameplay running behind the menu, not a still</sub>
 </td>
 <td align="center" width="33%">
   <img src="docs/screenshots/gameplay.png" width="240" alt="Driving through traffic"><br>
@@ -148,6 +148,15 @@ press that does nothing.
 Best score, total coins and your sound setting persist in the browser.
 
 ---
+
+## 🎬 The landing screen
+
+There is no trailer video and no hero image. The menu sits over the game
+actually running — real road, real bends, real traffic, a car driving itself
+and a cruiser on its tail — in a dedicated `AttractScene` that reuses the same
+`RoadManager` and `TrafficManager` as play. It has no collisions, no scoring
+and no failure state; it is scenery that can never drift out of step with what
+the game looks like.
 
 ## 🔧 Garage
 

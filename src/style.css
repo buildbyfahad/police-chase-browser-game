@@ -140,6 +140,8 @@ html, body {
 
 /* ---------- Stats ---------- */
 .stats-row { display: flex; gap: 10px; }
+.settings-row { display: flex; gap: 8px; }
+.settings-row .btn { flex: 1; }
 .stat {
   flex: 1; display: flex; flex-direction: column; gap: 4px;
   padding: 10px 8px; border-radius: 12px;
@@ -278,9 +280,54 @@ html, body {
 .tc-boost svg { transition: transform 0.09s ease, filter 0.09s ease; }
 .tc-boost.active svg { transform: scale(0.95); }
 
+/* ---- Boost state ----
+   The bottle is the gauge: it empties as charge is spent, greys out when
+   there is none left, and fires a visible jet while boost is actually
+   running. Driven by real game state, not by whether a finger is down —
+   holding the button with an empty bottle must not look like boosting. */
+.nos-fill {
+  transform-origin: 50% 100%;
+  transform: scaleY(var(--boost-fuel, 1));
+  transition: transform 0.12s linear;
+}
+.nos-mark {
+  fill: #cfe6ff;
+  opacity: 0.75;
+  font: 900 11px 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+}
+.nos-jet { opacity: 0; transform-origin: 50% 80%; transform: scaleY(0.4); }
+
+/* Firing */
+.tc-boost.is-boosting svg { filter: drop-shadow(0 2px 5px rgba(0,0,0,.6)) drop-shadow(0 0 22px rgba(120,190,255,1)); }
+.tc-boost.is-boosting .nos-jet { opacity: 1; animation: jet-flicker 0.14s steps(2) infinite; }
+.tc-boost.is-boosting .nos-mark { fill: #ffffff; opacity: 1; }
+@keyframes jet-flicker {
+  0%   { transform: scaleY(0.85) scaleX(1); }
+  100% { transform: scaleY(1.15) scaleX(0.9); }
+}
+
+/* Empty — clearly unavailable, so a dead press is explained */
+.tc-boost.is-empty svg { filter: grayscale(0.85) brightness(0.62) drop-shadow(0 3px 7px rgba(0,0,0,.55)); }
+.tc-boost.is-empty { opacity: 0.75; }
+
 .tc-gas.active svg   { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(94, 255, 176, 0.85)); }
 .tc-brake.active svg { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(255, 90, 120, 0.85)); }
 .tc-boost.active svg { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 18px rgba(120, 190, 255, 0.9)); }
+
+/* ---------- Control side ----------
+   Left-handed layout mirrors the strip: pedals move to the outer left edge,
+   steering to the right, and the accelerator leans the other way so it still
+   tilts inward, away from the screen edge. */
+#touch-controls.side-left { flex-direction: row-reverse; }
+#touch-controls.side-left .tc-pedals {
+  grid-template-columns: var(--tc-gas-w) var(--tc-brake-w);
+}
+#touch-controls.side-left .tc-boost { grid-area: 1 / 1; }
+#touch-controls.side-left .tc-brake { grid-area: 2 / 2; }
+#touch-controls.side-left .tc-gas   { grid-area: 2 / 1; }
+#touch-controls.side-left .tc-gas .pd-pad { transform: rotate(11deg); transform-origin: 55% 88%; }
+#touch-controls.side-left .tc-gas.active .pd-pad { transform: rotate(3.5deg) translateY(2px) scaleY(0.97); }
 
 /* ---------- Pause button ---------- */
 .icon-btn {

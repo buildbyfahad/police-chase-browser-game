@@ -4,7 +4,7 @@
  * top-level description of what a frame of Police Chase actually is.
  */
 import Phaser from 'phaser';
-import { GAME_HEIGHT, GAME_WIDTH } from '../config/GameConfig';
+import { GAME_HEIGHT, GAME_WIDTH, NITRO_MAX, NITRO_MIN_TO_FIRE } from '../config/GameConfig';
 import { Player } from '../entities/Player';
 import type { PickupKind } from '../entities/Pickup';
 import { Audio } from '../systems/AudioManager';
@@ -19,6 +19,7 @@ import { RoadManager } from '../systems/RoadManager';
 import { ScoreManager } from '../systems/ScoreManager';
 import { TrafficManager } from '../systems/TrafficManager';
 import { createHudState, HudScene, type HudState } from './HudScene';
+import { UI } from '../../ui/UIManager';
 
 /** Longest frame step we'll simulate — protects against tab-switch spikes. */
 const MAX_DT = 0.05;
@@ -135,6 +136,7 @@ export class GameScene extends Phaser.Scene {
     this.hudState = Object.assign(this.hudState, createHudState());
     this.nearMissCooldown = 0;
     this.running = true;
+    UI.resetBoostState();
 
     Audio.startEngine();
     Audio.startSiren();
@@ -175,6 +177,13 @@ export class GameScene extends Phaser.Scene {
     this.nearMissCooldown = Math.max(0, this.nearMissCooldown - dt);
 
     this.effects.updateAmbient(speed, this.player.nitroActive, this.player.x, this.player.y);
+    // The boost control mirrors real nitro state — charge left, firing, empty —
+    // so a press with a dead bottle never looks like a boost.
+    UI.setBoostState(
+      this.player.nitroActive,
+      this.player.nitroFuel / NITRO_MAX,
+      this.player.nitroActive || this.player.nitroFuel >= NITRO_MIN_TO_FIRE,
+    );
     Audio.setEngine(this.player.throttle, this.player.nitroActive);
     Audio.setSirenProximity(this.police.proximity());
 

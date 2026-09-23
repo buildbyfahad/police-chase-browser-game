@@ -6,10 +6,14 @@
  * implementation later is the only change a backend would require.
  */
 
+/** Which side of the screen the pedal cluster sits on. */
+export type ControlSide = 'left' | 'right';
+
 export interface SaveData {
   bestScore: number;
   totalCoins: number;
   soundEnabled: boolean;
+  controlSide: ControlSide;
   selectedCar: string;
   carUpgrades: Record<string, number>;
 }
@@ -20,6 +24,7 @@ const DEFAULTS: SaveData = {
   bestScore: 0,
   totalCoins: 0,
   soundEnabled: true,
+  controlSide: 'right',
   selectedCar: 'default',
   carUpgrades: {},
 };
@@ -40,6 +45,7 @@ class StorageManagerImpl {
         bestScore: numberOr(parsed.bestScore, DEFAULTS.bestScore),
         totalCoins: numberOr(parsed.totalCoins, DEFAULTS.totalCoins),
         soundEnabled: typeof parsed.soundEnabled === 'boolean' ? parsed.soundEnabled : DEFAULTS.soundEnabled,
+        controlSide: parsed.controlSide === 'left' ? 'left' : DEFAULTS.controlSide,
         selectedCar: typeof parsed.selectedCar === 'string' ? parsed.selectedCar : DEFAULTS.selectedCar,
         carUpgrades: parsed.carUpgrades && typeof parsed.carUpgrades === 'object' ? parsed.carUpgrades : {},
       };

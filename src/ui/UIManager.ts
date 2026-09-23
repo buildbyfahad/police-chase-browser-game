@@ -8,7 +8,7 @@
 import { Audio } from '../game/systems/AudioManager';
 import type { GameOverPayload } from '../game/systems/EventBus';
 import { formatScore, formatTime } from '../game/systems/ScoreManager';
-import { Storage } from '../game/systems/StorageManager';
+import { Storage, type ControlSide } from '../game/systems/StorageManager';
 
 export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER';
 
@@ -18,6 +18,10 @@ export interface UICallbacks {
   onRestart: () => void;
   onHome: () => void;
   onPause: () => void;
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return v < min ? min : v > max ? max : v;
 }
 
 function el<T extends HTMLElement>(id: string): T {
@@ -33,6 +37,12 @@ export class UIManager {
   private readonly touchControls = el('touch-controls');
   private readonly pauseBtn = el<HTMLButtonElement>('btn-pause');
   private readonly soundBtn = el<HTMLButtonElement>('btn-sound');
+  private readonly sideBtn = el<HTMLButtonElement>('btn-side');
+  private readonly boostBtn = el<HTMLButtonElement>('touch-controls').querySelector<HTMLElement>('.tc-boost')!;
+
+  // Last pushed boost visuals, so we only touch the DOM when they change
+  private lastBoosting: boolean | null = null;
+  private lastFuelStep = -1;
 
   /** Touch controls are only mounted on devices that actually have a finger. */
   private readonly hasTouch =
@@ -64,7 +74,14 @@ export class UIManager {
       if (on) Audio.playButton();
     });
 
+    this.sideBtn.addEventListener('click', () => {
+      Audio.unlock();
+      Audio.playButton();
+      this.setControlSide(Storage.get('controlSide') === 'right' ? 'left' : 'right');
+    });
+
     this.renderSoundButton(Audio.isEnabled());
+    this.setControlSide(Storage.get('controlSide'));
     this.refreshMenuStats();
     this.positionPauseButton();
 
@@ -80,6 +97,44 @@ export class UIManager {
       Audio.playButton();
       handler();
     });
+  }
+
+  /** Moves the pedal cluster to the player's preferred side and stores it. */
+  private setControlSide(side: ControlSide): void {
+    Storage.set('controlSide', side);
+    this.touchControls.classList.toggle('side-left', side === 'left');
+    this.sideBtn.textContent = `PEDALS: ${side.toUpperCase()}`;
+  }
+
+  /**
+   * Reflects real boost state on the bottle: how much charge is left, whether
+   * it is firing, and whether it is empty. Called only when something
+   * actually changes, so gameplay never triggers needless DOM work.
+   */
+  setBoostState(boosting: boolean, fuel01: number, canFire: boolean): void {
+    const step = Math.round(clamp(fuel01, 0, 1) * 20);
+    if (step !== this.lastFuelStep) {
+      this.lastFuelStep = step;
+      this.boostBtn.style.setProperty('--boost-fuel', String(step / 20));
+    }
+    // "Empty" means too low to fire, not literally zero — nitro bottoms out
+    // above zero and trickles back, so a bottle showing charge you cannot
+    // actually spend would be a lie.
+    if (!canFire !== this.boostBtn.classList.contains('is-empty')) {
+      this.boostBtn.classList.toggle('is-empty', !canFire);
+    }
+    if (boosting !== this.lastBoosting) {
+      this.lastBoosting = boosting;
+      this.boostBtn.classList.toggle('is-boosting', boosting);
+    }
+  }
+
+  /** Clears boost visuals between runs. */
+  resetBoostState(): void {
+    this.lastBoosting = null;
+    this.lastFuelStep = -1;
+    this.boostBtn.classList.remove('is-boosting', 'is-empty');
+    this.boostBtn.style.setProperty('--boost-fuel', '1');
   }
 
   private renderSoundButton(on: boolean): void {

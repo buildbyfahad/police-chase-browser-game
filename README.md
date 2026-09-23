@@ -36,7 +36,7 @@ No install. No account. No downloads. Just hit **PLAY**.
 <td align="center" width="33%">
   <img src="docs/screenshots/menu.png" width="240" alt="Landing screen"><br>
   <b>Landing screen</b><br>
-  <sub>Best score, total coins, sound toggle</sub>
+  <sub>Best score, coins, sound and pedal-side toggles</sub>
 </td>
 <td align="center" width="33%">
   <img src="docs/screenshots/gameplay.png" width="240" alt="Driving through traffic"><br>
@@ -113,6 +113,15 @@ nginx — anything. **There is no backend.**
 <tr><td><b>Nitro</b></td><td><code>Space</code></td><td>hold <b>BOOST</b></td></tr>
 <tr><td><b>Pause</b></td><td><code>Esc</code></td><td>HUD pause button</td></tr>
 </table>
+
+On touch, steering sits under one thumb and the **GAS / BRAKE / BOOST** cluster
+under the other. Which side the pedals go on is a setting on the landing screen
+(**PEDALS: LEFT / RIGHT**) and is remembered between sessions.
+
+The boost control is the nitrous bottle itself: it drains as you spend charge,
+fires a visible jet while boost is actually running, and greys out when there
+is too little left to fire — so a press that does nothing always looks like a
+press that does nothing.
 
 ---
 

@@ -27,7 +27,10 @@
             <div class="stat"><span class="stat-label">TOTAL COINS</span><span class="stat-value" id="menu-coins">0</span></div>
           </div>
 
-          <button id="btn-sound" class="btn btn-ghost" aria-pressed="true">SOUND: ON</button>
+          <div class="settings-row">
+            <button id="btn-sound" class="btn btn-ghost" aria-pressed="true">SOUND: ON</button>
+            <button id="btn-side" class="btn btn-ghost">PEDALS: RIGHT</button>
+          </div>
 
           <div class="controls-help">
             <div class="ch-row"><b>Desktop</b><span>A/D or ←/→ steer · W/S throttle · SPACE nitro · ESC pause</span></div>
@@ -91,7 +94,7 @@
                it should feel like pressing the real part. -->
 
           <button class="tc tc-boost" data-ctl="nitro" aria-label="Boost">
-            <svg viewBox="0 0 56 100" aria-hidden="true">
+            <svg viewBox="0 0 56 112" aria-hidden="true">
               <defs>
                 <linearGradient id="nosBody" x1="0" x2="1" y1="0" y2="0">
                   <stop offset="0%" stop-color="#11427f"/>
@@ -105,14 +108,36 @@
                   <stop offset="70%" stop-color="#8b94aa"/>
                   <stop offset="100%" stop-color="#495166"/>
                 </linearGradient>
+                <linearGradient id="nosJet" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="35%" stop-color="#8fd0ff"/>
+                  <stop offset="100%" stop-color="#2f7bff" stop-opacity="0"/>
+                </linearGradient>
+                <clipPath id="nosClip">
+                  <rect x="8" y="22" width="40" height="70" rx="17"/>
+                </clipPath>
               </defs>
+
+              <!-- jet of gas, only visible while boost is actually firing -->
+              <g class="nos-jet">
+                <path d="M20 90h16l-4 20h-8z" fill="url(#nosJet)"/>
+                <path d="M24 92h8l-2 14h-4z" fill="#ffffff" opacity=".8"/>
+              </g>
+
               <ellipse class="pd-shadow" cx="28" cy="95" rx="20" ry="4"/>
               <rect x="20" y="4" width="16" height="9" rx="3" fill="url(#nosSteel)"/>
               <rect x="25" y="11" width="6" height="8" fill="url(#nosSteel)"/>
               <rect x="21" y="17" width="14" height="7" rx="2.5" fill="url(#nosSteel)"/>
-              <rect x="8" y="22" width="40" height="70" rx="17" fill="url(#nosBody)"/>
-              <rect x="8" y="47" width="40" height="15" fill="#0b1f3d" opacity=".5"/>
-              <rect x="13" y="30" width="5" height="54" rx="2.5" fill="#ffffff" opacity=".3"/>
+
+              <!-- charge level: the bottle empties as boost is spent -->
+              <g clip-path="url(#nosClip)">
+                <rect x="8" y="22" width="40" height="70" fill="#111a2e"/>
+                <rect class="nos-fill" x="8" y="22" width="40" height="70" fill="url(#nosBody)"/>
+                <rect class="nos-fill" x="13" y="22" width="5" height="70" fill="#ffffff" opacity=".28"/>
+              </g>
+
+              <rect x="8" y="47" width="40" height="16" fill="#0b1f3d" opacity=".55"/>
+              <text class="nos-mark" x="28" y="59" text-anchor="middle">N2O</text>
               <rect x="8" y="22" width="40" height="70" rx="17" fill="none" stroke="#9ed4ff" stroke-width="1.6" opacity=".55"/>
             </svg>
           </button>

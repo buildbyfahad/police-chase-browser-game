@@ -232,11 +232,18 @@ html, body {
 }
 .tc span { font-size: 10px; letter-spacing: 1.2px; line-height: 1; opacity: 0.95; }
 .tc svg {
-  width: 30px; height: 30px;
+  width: 33px; height: 33px;
   fill: none; stroke: currentColor;
   stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
 }
-.tc svg.ic-fill { fill: currentColor; stroke: none; }
+/* Icon parts: solid pads/bodies read as real objects at thumb size, thin
+   strokes carry the hinge, arm and floor that identify each pedal. */
+.tc svg .ic-solid { fill: currentColor; stroke: none; }
+.tc svg .ic-line { fill: none; stroke: currentColor; stroke-width: 1.9; }
+/* Filled pad with a matching stroke, so the corners round off naturally */
+.tc svg .ic-pad { fill: currentColor; stroke: currentColor; stroke-width: 2.1; stroke-linejoin: round; }
+/* Cut-through band on the nitrous bottle — punched out in the button colour */
+.tc svg .ic-cut { fill: none; stroke: currentColor; stroke-width: 1.8; opacity: 0.32; }
 
 /* Steering */
 .tc-dir { width: var(--tc-dir); height: var(--tc-dir); border-radius: 24px; }
@@ -250,7 +257,7 @@ html, body {
   border-color: rgba(94, 255, 176, 0.55);
   color: #ddfff0;
 }
-.tc-gas svg { width: 34px; height: 34px; }
+.tc-gas svg { width: 38px; height: 38px; }
 
 .tc-brake {
   width: var(--tc-aux); height: var(--tc-aux);
@@ -310,7 +317,7 @@ html, body {
 @media (max-width: 400px) {
   #touch-controls { --tc-dir: 66px; --tc-gas: 80px; --tc-aux: 62px; --tc-gap: 8px; }
   .tc-steer { gap: 9px; }
-  .tc svg { width: 26px; height: 26px; }
+  .tc svg { width: 29px; height: 29px; }
   .tc-dir svg { width: 32px; height: 32px; }
   .tc span { font-size: 9px; }
 }
@@ -319,7 +326,7 @@ html, body {
   .panel { padding: 20px 16px; gap: 11px; }
   #touch-controls { --tc-dir: 58px; --tc-gas: 70px; --tc-aux: 55px; --tc-gap: 7px; padding: 0 8px; }
   .tc-steer { gap: 7px; }
-  .tc svg { width: 22px; height: 22px; }
+  .tc svg { width: 25px; height: 25px; }
   .tc-dir svg { width: 28px; height: 28px; }
   .tc span { font-size: 8px; letter-spacing: 0.6px; }
   .sb-value { font-size: 36px; }
